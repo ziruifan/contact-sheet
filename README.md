@@ -16,7 +16,8 @@ and English/Chinese out of the box. Requires Hugo ≥ 0.153.
 `exampleSite/` is a complete demo with Lorem Ipsum text (the Chinese pages use the
 千字文, the traditional Chinese filler text). It has 36 abstract photos in four
 categories, with tags, descriptions and an About page, in English and Chinese.
-Preview it from the theme folder:
+See it live at **https://ziruifan.github.io/contact-sheet/** (deployed by
+`.github/workflows/pages.yml` on every push to `main`), or preview it from the theme folder:
 
 ```
 hugo server --source exampleSite
