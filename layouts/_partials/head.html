@@ -24,7 +24,15 @@
 {{- range .AllTranslations }}
 <link rel="alternate" hreflang="{{ .Language.LanguageCode | default .Language.Lang }}" href="{{ .Permalink }}">
 {{- end }}
-<link rel="icon" href="{{ "favicon.ico" | relURL }}">
+{{- /* Favicons: static/favicon.ico always (the theme ships a default); an SVG icon and an
+       Apple touch icon when the site puts favicon.svg / apple-touch-icon.png in assets/. */}}
+<link rel="icon" href="{{ "favicon.ico" | relURL }}" sizes="32x32">
+{{- with resources.Get "favicon.svg" }}
+<link rel="icon" href="{{ (. | fingerprint).RelPermalink }}" type="image/svg+xml">
+{{- end }}
+{{- with resources.Get "apple-touch-icon.png" }}
+<link rel="apple-touch-icon" href="{{ (. | fingerprint).RelPermalink }}">
+{{- end }}
 {{- if ne site.Params.googleFonts false }}
   {{- /* Chinese pages pair Ubuntu (Latin) with Noto Sans SC (Han), matching how
          Ubuntu's Chinese desktop renders text: Ubuntu + Noto Sans CJK SC.

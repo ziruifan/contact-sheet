@@ -119,6 +119,19 @@ The theme picks the first of these that exists: `cover.*` in the category folder
 Per-language values (a translated site name, for example) go under
 `[languages.zh]` and `[languages.zh.params]`.
 
+## Favicon
+
+The theme ships a plain `static/favicon.ico`. To use your own, add any of these to
+your site (the example site has all three):
+
+| file                          | used by                                   |
+|-------------------------------|-------------------------------------------|
+| `static/favicon.ico`          | every browser (16, 32 and 48 px inside)   |
+| `assets/favicon.svg`          | modern browsers, sharp at any size        |
+| `assets/apple-touch-icon.png` | iPhone/iPad home screen (180 × 180, no transparency) |
+
+The SVG and Apple icons are linked automatically when they exist.
+
 ## Fonts
 
 Latin text uses **Ubuntu**. Pages in a `zh*` language pair it with **Noto Sans SC**,

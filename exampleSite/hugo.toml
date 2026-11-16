@@ -20,8 +20,8 @@ defaultContentLanguageInSubdir = false
   categories = ['lorem', 'ipsum', 'dolor', 'amet']
   # Shown top-left and in the footer. Defaults to `title`.
   author = 'Lorem Ipsum'
-  # Optional footer logo, path in assets/ or static/ (e.g. 'images/logo.svg').
-  logo = ''
+  # Optional footer logo, path in assets/ or static/. Here: the favicon's contact-sheet mark.
+  logo = 'favicon.svg'
   # Fallback meta description.
   description = 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.'
 

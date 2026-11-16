@@ -4,6 +4,6 @@
   {{- with site.Params.logo }}
     {{- $src := "" }}
     {{- with resources.Get . }}{{ $src = .RelPermalink }}{{ else }}{{ $src = relURL . }}{{ end }}
-    <a class="logo" href="{{ site.Home.RelPermalink }}"><img src="{{ $src }}" alt="{{ $name }}" height="36"></a>
+    <a class="logo" href="{{ site.Home.RelPermalink }}"><img src="{{ $src }}" alt="{{ $name }}" height="24"></a>
   {{- end }}
 </footer>

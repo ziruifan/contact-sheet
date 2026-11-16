@@ -200,7 +200,7 @@ img { display: block; max-width: 100%; }
   color: var(--dim);
 }
 .home .site-footer { margin-top: 32px; }
-.site-footer .logo img { height: 36px; width: auto; margin: 4px 0; opacity: 0.85; }
+.site-footer .logo img { height: 24px; width: auto; margin: 4px 0; opacity: 0.85; }
 .site-footer .logo:hover img { opacity: 1; }
 
 /* ---------- Shared type ---------- */
