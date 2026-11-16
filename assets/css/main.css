@@ -25,21 +25,21 @@
      The stops follow an ease-in-out curve ("scrim" gradient), so the fade has no
      visible edge where it meets the photo. */
   --fade: linear-gradient(to top,
-    rgba(14, 14, 14, 0.85) 0%,
-    rgba(14, 14, 14, 0.839) 8.1%,
-    rgba(14, 14, 14, 0.808) 15.5%,
-    rgba(14, 14, 14, 0.762) 22.5%,
-    rgba(14, 14, 14, 0.701) 29%,
-    rgba(14, 14, 14, 0.63) 35.3%,
-    rgba(14, 14, 14, 0.551) 41.2%,
-    rgba(14, 14, 14, 0.468) 47.1%,
-    rgba(14, 14, 14, 0.383) 52.9%,
-    rgba(14, 14, 14, 0.299) 58.8%,
-    rgba(14, 14, 14, 0.22) 64.7%,
-    rgba(14, 14, 14, 0.149) 71%,
-    rgba(14, 14, 14, 0.088) 77.5%,
-    rgba(14, 14, 14, 0.042) 84.5%,
-    rgba(14, 14, 14, 0.011) 91.9%,
+    rgba(14, 14, 14, 0.7) 0%,
+    rgba(14, 14, 14, 0.691) 8.1%,
+    rgba(14, 14, 14, 0.665) 15.5%,
+    rgba(14, 14, 14, 0.628) 22.5%,
+    rgba(14, 14, 14, 0.578) 29%,
+    rgba(14, 14, 14, 0.519) 35.3%,
+    rgba(14, 14, 14, 0.454) 41.2%,
+    rgba(14, 14, 14, 0.385) 47.1%,
+    rgba(14, 14, 14, 0.315) 52.9%,
+    rgba(14, 14, 14, 0.246) 58.8%,
+    rgba(14, 14, 14, 0.181) 64.7%,
+    rgba(14, 14, 14, 0.122) 71%,
+    rgba(14, 14, 14, 0.072) 77.5%,
+    rgba(14, 14, 14, 0.035) 84.5%,
+    rgba(14, 14, 14, 0.009) 91.9%,
     rgba(14, 14, 14, 0.0) 100%);
 
   --gutter: clamp(24px, 1.5vw, 56px);
@@ -491,12 +491,12 @@ img { display: block; max-width: 100%; }
 .about-body {
   flex: 999 1 480px;
   min-width: 0;
-  max-width: clamp(720px, 38vw, 1000px);
+  max-width: 720px;
   display: flex;
   flex-direction: column;
   gap: 28px;
 }
-.bio { font-size: clamp(17px, 0.45vw + 10px, 22px); line-height: 1.65; color: var(--fg-soft); }
+.bio { font-size: 17px; line-height: 1.65; color: var(--fg-soft); }
 .bio p { margin: 0 0 0.8em; }
 .bio > :last-child { margin-bottom: 0; }
 .bio a { color: var(--fg); text-decoration: underline; text-decoration-color: var(--outline); text-underline-offset: 3px; }
