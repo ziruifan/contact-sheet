@@ -1,0 +1,22 @@
+{{- /*
+Main navigation. Uses the "main" menu when one is defined (front matter `menus: main`
+or site config); otherwise lists the categories followed by the About page.
+@context {page} .
+*/ -}}
+{{- $page := . }}
+<nav class="nav" aria-label="Main">
+  {{- with site.Menus.main }}
+    {{- range . }}
+      {{- $current := or ($page.IsMenuCurrent .Menu .) ($page.HasMenuCurrent .Menu .) }}
+      <a href="{{ .URL }}"{{ if $current }} aria-current="page"{{ end }}>{{ .Name }}</a>
+    {{- end }}
+  {{- else }}
+    {{- range partialCached "categories.html" . site.Language.Lang }}
+      <a href="{{ .RelPermalink }}"{{ if or ($page.Eq .) ($page.IsDescendant .) }} aria-current="page"{{ end }}>{{ .LinkTitle }}</a>
+    {{- end }}
+    {{- with site.GetPage "/about" }}
+      <a href="{{ .RelPermalink }}"{{ if $page.Eq . }} aria-current="page"{{ end }}>{{ .LinkTitle }}</a>
+    {{- end }}
+  {{- end }}
+  {{- partial "lang-switch.html" . }}
+</nav>

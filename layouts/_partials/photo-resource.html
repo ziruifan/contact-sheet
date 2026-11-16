@@ -1,0 +1,33 @@
+{{- /*
+Returns the main image resource for a page, or nothing.
+
+  Photo page: the image named by front matter `image`, else the first image in the bundle.
+  Section:    `cover.*` in the section folder, else the image of a photo marked
+              `featured: true`, else the image of the first photo.
+  Other page: same as a photo page (e.g. the portrait on the About page).
+
+@context {page} .
+@example {{ with partial "photo-resource.html" . }}…{{ end }}
+*/ -}}
+{{- $img := false }}
+{{- if .IsSection }}
+  {{- with .Resources.GetMatch "cover.*" }}
+    {{- $img = . }}
+  {{- else }}
+    {{- $pages := .RegularPages }}
+    {{- with where $pages "Params.featured" true }}{{ $pages = . }}{{ end }}
+    {{- range $pages }}
+      {{- if not $img }}
+        {{- with partial "photo-resource.html" . }}{{ $img = . }}{{ end }}
+      {{- end }}
+    {{- end }}
+  {{- end }}
+{{- else if .IsPage }}
+  {{- with .Params.image }}
+    {{- $img = $.Resources.GetMatch . }}
+  {{- end }}
+  {{- if not $img }}
+    {{- with .Resources.ByType "image" }}{{ $img = index . 0 }}{{ end }}
+  {{- end }}
+{{- end }}
+{{- return $img }}

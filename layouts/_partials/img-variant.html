@@ -1,0 +1,16 @@
+{{- /*
+Returns an auto-oriented WebP copy of an image, at most `width` px wide.
+Formats Hugo cannot process (SVG, GIF) are returned unchanged.
+
+@context {resource} img
+@context {int} width
+*/ -}}
+{{- $img := .img }}
+{{- $out := $img }}
+{{- if in (slice "jpeg" "png" "webp" "tiff" "bmp") $img.MediaType.SubType }}
+  {{- $o := $img }}
+  {{- if eq $img.MediaType.SubType "jpeg" }}{{ $o = $img.Filter images.AutoOrient }}{{ end }}
+  {{- $w := math.Min .width $o.Width | int }}
+  {{- $out = $o.Resize (printf "%dx webp" $w) }}
+{{- end }}
+{{- return $out }}

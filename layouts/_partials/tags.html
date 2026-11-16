@@ -1,0 +1,6 @@
+{{- /* Returns a page's tags as a list (front matter `tags`, a list or a single string). */ -}}
+{{- $tags := slice }}
+{{- with .Params.tags }}
+  {{- if reflect.IsSlice . }}{{ $tags = . }}{{ else }}{{ $tags = slice . }}{{ end }}
+{{- end }}
+{{- return $tags }}

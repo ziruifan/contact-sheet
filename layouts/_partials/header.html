@@ -1,0 +1,14 @@
+{{- $name := site.Params.author | default site.Title }}
+<header class="site-header">
+  <a class="brand" href="{{ site.Home.RelPermalink }}">{{ $name }}</a>
+  {{- if .IsHome }}
+    <nav class="nav" aria-label="Main">
+      {{- with site.GetPage "/about" }}
+        <a href="{{ .RelPermalink }}">{{ .LinkTitle }}</a>
+      {{- end }}
+      {{- partial "lang-switch.html" . }}
+    </nav>
+  {{- else }}
+    {{- partial "nav.html" . }}
+  {{- end }}
+</header>

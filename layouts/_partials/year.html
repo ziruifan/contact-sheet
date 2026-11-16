@@ -1,0 +1,4 @@
+{{- /* Returns the year to show for a page: front matter `year`, else the year of `date`. */ -}}
+{{- $y := "" }}
+{{- with .Params.year }}{{ $y = string . }}{{ else }}{{ if not .Date.IsZero }}{{ $y = string .Date.Year }}{{ end }}{{ end }}
+{{- return $y }}

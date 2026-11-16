@@ -1,0 +1,26 @@
+# contact-sheet theme defaults. Site config (../../hugo.toml) overrides these.
+
+# Taxonomies are unused; disable them in the site config with
+# disableKinds = ['taxonomy', 'term'] (theme configs can't set it).
+
+[params]
+  # Shown top-left in the header and in the footer copyright line.
+  # Falls back to site.Title when empty.
+  author = ''
+  # Optional logo shown at the bottom-right of the footer.
+  # Path inside assets/ or static/, e.g. 'images/logo.svg'.
+  logo = ''
+  # Load Ubuntu from Google Fonts. Set false to self-host or use system fonts.
+  googleFonts = true
+
+[markup.goldmark.renderer]
+  unsafe = false
+
+[imaging]
+  quality = 82
+  resampleFilter = 'Lanczos'
+
+[module]
+  [module.hugoVersion]
+    extended = false
+    min = '0.153.0'

@@ -1,0 +1,27 @@
+{{- /*
+Returns the category sections shown on the homepage and in the navigation.
+
+With `params.categories` set in the site config, those sections in that order:
+
+  [params]
+    categories = ['art', 'engineering', 'wildlife']
+
+Each name is a folder under content/. Otherwise every top-level section is used,
+ordered by `weight` in its _index.md.
+
+@context {page} .  (any page; only the current language matters)
+*/ -}}
+{{- $out := slice }}
+{{- with site.Params.categories }}
+  {{- range . }}
+    {{- $name := strings.Trim . "/" }}
+    {{- with site.GetPage (printf "/%s" $name) }}
+      {{- if .IsSection }}{{ $out = $out | append . }}{{ end }}
+    {{- else }}
+      {{- warnf "contact-sheet: category %q is listed in params.categories but content/%s/ does not exist" $name $name }}
+    {{- end }}
+  {{- end }}
+{{- else }}
+  {{- $out = site.Home.Sections }}
+{{- end }}
+{{- return $out }}

@@ -1,0 +1,31 @@
+{{- /*
+Renders a responsive <img> for an image resource.
+
+@context {resource} img      The image.
+@context {slice}    widths   Candidate widths for srcset.
+@context {string}   sizes    The sizes attribute.
+@context {string}   alt      Alt text.
+@context {string}   class    Optional class.
+@context {bool}     eager    Load eagerly with high priority (above-the-fold images).
+*/ -}}
+{{- $img := .img }}
+{{- $processable := in (slice "jpeg" "png" "webp" "tiff" "bmp") $img.MediaType.SubType }}
+{{- $srcset := slice }}
+{{- $src := $img }}
+{{- if $processable }}
+  {{- $seen := dict }}
+  {{- range .widths }}
+    {{- $v := partial "img-variant.html" (dict "img" $img "width" .) }}
+    {{- if not (index $seen (string $v.Width)) }}
+      {{- $seen = merge $seen (dict (string $v.Width) true) }}
+      {{- $srcset = $srcset | append (printf "%s %dw" $v.RelPermalink $v.Width) }}
+      {{- $src = $v }}
+    {{- end }}
+  {{- end }}
+{{- end }}
+<img src="{{ $src.RelPermalink }}"
+  {{- with $srcset }} srcset="{{ delimit . ", " }}" sizes="{{ $.sizes | default "100vw" }}"{{ end }}
+  {{- with $src.Width }} width="{{ . }}" height="{{ $src.Height }}"{{ end }}
+  alt="{{ .alt }}"
+  {{- with .class }} class="{{ . }}"{{ end }}
+  {{- if .eager }} fetchpriority="high"{{ else }} loading="lazy"{{ end }} decoding="async">

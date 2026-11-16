@@ -1,0 +1,9 @@
+{{- $name := site.Params.author | default site.Title }}
+<footer class="site-footer">
+  <span>{{ with site.Params.copyright }}{{ . }}{{ else }}© {{ now.Year }} {{ $name }}{{ end }}</span>
+  {{- with site.Params.logo }}
+    {{- $src := "" }}
+    {{- with resources.Get . }}{{ $src = .RelPermalink }}{{ else }}{{ $src = relURL . }}{{ end }}
+    <a class="logo" href="{{ site.Home.RelPermalink }}"><img src="{{ $src }}" alt="{{ $name }}" height="36"></a>
+  {{- end }}
+</footer>

@@ -1,0 +1,27 @@
+{{ define "main" }}
+{{- $cats := partialCached "categories.html" . site.Language.Lang }}
+{{- $n := len $cats }}
+{{- /* Columns: medium screens (--cols-m) and wide screens (--cols-w). Picked so rows
+       come out even: 4 → 2×2 / 1×4, 3 → 3, 5 → 3+2, 6 → 3+3, 8 → 2×4 / 4+4. */}}
+{{- $three := or (eq (mod $n 3) 0) (eq $n 5) }}
+{{- $colsM := cond (le $n 1) 1 (cond $three 3 2) }}
+{{- $colsW := cond (le $n 4) (math.Max $n 1 | int) (cond $three 3 4) }}
+<main class="tiles" style="--cols-m: {{ $colsM }}; --cols-w: {{ $colsW }}">
+  {{- range $i, $s := $cats }}
+    {{- $img := partial "photo-resource.html" $s }}
+    <a class="tile" href="{{ $s.RelPermalink }}"{{ with $s.Params.tint }} style="--tint: {{ . | safeCSS }}"{{ end }}>
+      {{- with $img }}
+        {{- partial "img.html" (dict
+          "img" .
+          "widths" (slice 640 960 1400 1920)
+          "sizes" (printf "(min-width: 1700px) %dvw, (min-width: 860px) %dvw, 100vw" (div 100 $colsW) (div 100 $colsM))
+          "alt" ""
+          "class" "tile-img"
+          "eager" (lt $i 2)
+        ) }}
+      {{- end }}
+      <span class="tile-label">{{ $s.LinkTitle }}</span>
+    </a>
+  {{- end }}
+</main>
+{{ end }}

@@ -1,0 +1,27 @@
+{{- /*
+Language menu. Hidden when the site has a single language.
+Each item links to this page in that language, or that language's homepage.
+A <details> disclosure, so it works without JavaScript; main.js adds closing on
+outside click / Escape and flips the menu when it would overflow the left edge.
+@context {page} .
+*/ -}}
+{{- if gt (len site.Languages) 1 }}
+  {{- $page := . }}
+  {{- $current := site.Language }}
+  <details class="lang" data-lang>
+    <summary aria-label="{{ T "language" }}: {{ $current.LanguageName | default (upper $current.Lang) }}">
+      <span>{{ $current.LanguageName | default (upper $current.Lang) }}</span>
+      <svg aria-hidden="true" width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3.5 5 6.5l3-3"/></svg>
+    </summary>
+    <ul class="lang-menu">
+      {{- range site.Languages }}
+        {{- $lang := .Lang }}
+        {{- $url := "" }}
+        {{- range $page.AllTranslations }}{{ if eq .Language.Lang $lang }}{{ $url = .RelPermalink }}{{ end }}{{ end }}
+        {{- if not $url }}{{ range where site.Sites "Language.Lang" $lang }}{{ $url = .Home.RelPermalink }}{{ end }}{{ end }}
+        {{- $code := .LanguageCode | default .Lang }}
+      <li><a href="{{ $url }}" lang="{{ $code }}" hreflang="{{ $code }}"{{ if eq $lang $current.Lang }} aria-current="true"{{ end }}>{{ .LanguageName | default (upper .Lang) }}</a></li>
+      {{- end }}
+    </ul>
+  </details>
+{{- end }}

@@ -1,0 +1,58 @@
+{{ define "main" }}
+{{- /* Collect tags in order of first appearance, and count how many photos carry each. */}}
+{{- $tags := slice }}
+{{- $counts := dict }}
+{{- range .RegularPages }}
+  {{- range partial "tags.html" . }}
+    {{- $k := anchorize . }}
+    {{- if not (in $tags .) }}{{ $tags = $tags | append . }}{{ end }}
+    {{- $counts = merge $counts (dict $k (add (index $counts $k | default 0) 1)) }}
+  {{- end }}
+{{- end }}
+{{- /* Filters are useful when there are two or more tags, or one tag that only some photos carry. */}}
+{{- $showFilters := or (gt (len $tags) 1) (and (eq (len $tags) 1) (lt (index $counts (anchorize (index $tags 0))) (len .RegularPages))) }}
+<div class="page-head">
+  <h1 class="display">{{ .Title }}</h1>
+  {{- if $showFilters }}
+  <div class="chips" role="group" aria-label="{{ T "filterBy" }}" data-filter-group>
+    <button type="button" class="chip" data-filter="all" aria-pressed="true">{{ T "all" }}</button>
+    {{- range $tags }}
+    <button type="button" class="chip" data-filter="{{ . | anchorize }}" aria-pressed="false">{{ . }}</button>
+    {{- end }}
+  </div>
+  {{- end }}
+</div>
+{{- with .Content }}<div class="section-intro prose">{{ . }}</div>{{ end }}
+<main class="gallery" data-gallery>
+  {{- range $i, $p := .RegularPages }}
+    {{- $img := partial "photo-resource.html" $p }}
+    {{- $ratio := 1.0 }}
+    {{- with $img }}
+      {{- $v := partial "img-variant.html" (dict "img" . "width" 800) }}
+      {{- if and $v.Width $v.Height }}{{ $ratio = div (float $v.Width) $v.Height }}{{ end }}
+    {{- end }}
+    {{- $year := partial "year.html" $p }}
+    {{- $slugs := slice }}{{ range partial "tags.html" $p }}{{ $slugs = $slugs | append (anchorize .) }}{{ end }}
+    <figure class="item" style="--r: {{ printf "%.4f" $ratio }}"{{ with $slugs }} data-tags="{{ delimit . " " }}"{{ end }}>
+      <a class="frame" href="{{ $p.RelPermalink }}"{{ with $p.Params.tint | default $.Params.tint }} style="--tint: {{ . | safeCSS }}"{{ end }}>
+        {{- with $img }}
+          {{- partial "img.html" (dict
+            "img" .
+            "widths" (slice 480 800 1200 1600)
+            "sizes" (printf "(max-width: 600px) 100vw, %dpx" (math.Round (mul $ratio 420) | int))
+            "alt" $p.Title
+            "eager" (lt $i 4)
+          ) }}
+        {{- else }}
+          <span class="placeholder">{{ $p.Title }}</span>
+        {{- end }}
+        <span class="cap">
+          <span class="cap-title">{{ $p.Title }}</span>
+          {{- with $year }}<span class="cap-year">{{ . }}</span>{{ end }}
+        </span>
+      </a>
+    </figure>
+  {{- end }}
+  <div class="gallery-spacer" aria-hidden="true"></div>
+</main>
+{{ end }}

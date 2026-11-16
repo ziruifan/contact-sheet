@@ -1,0 +1,7 @@
+{{- /* True when a regular page should render as a photo detail view:
+  it lives inside a section (not the site root) and has an image. */ -}}
+{{- $ok := false }}
+{{- if and .IsPage (not .CurrentSection.IsHome) (ne .Layout "about") }}
+  {{- with partial "photo-resource.html" . }}{{ $ok = true }}{{ end }}
+{{- end }}
+{{- return $ok }}
