@@ -72,12 +72,19 @@ if (gallery) {
     }
   };
 
+  // Reserve the height of the tallest layout among "All" and every tag. A filter
+  // with fewer photos can be taller than "All" (fewer, larger images per row), so
+  // reserving only the unfiltered height isn't enough. Measured synchronously,
+  // so no intermediate layout is ever painted.
   const lockHeight = () => {
     gallery.style.minHeight = '';
-    show('all');
-    const height = gallery.getBoundingClientRect().height;
+    let height = 0;
+    for (const filter of ['all', ...known]) {
+      show(filter);
+      height = Math.max(height, gallery.getBoundingClientRect().height);
+    }
     show(current);
-    gallery.style.minHeight = height + 'px';
+    gallery.style.minHeight = Math.ceil(height) + 'px';
   };
 
   const apply = (filter, updateUrl) => {

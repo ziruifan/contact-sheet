@@ -42,10 +42,9 @@
     rgba(14, 14, 14, 0.011) 91.9%,
     rgba(14, 14, 14, 0.0) 100%);
 
-  --gutter: 24px;
+  --gutter: clamp(24px, 1.5vw, 56px);
   --gap: 12px;
-  --row: 280px;             /* target row height of the justified gallery */
-  --max: 1920px;
+  --row: max(280px, 15vw);  /* target row height of the justified gallery; grows on big screens */
 
   --font: "Ubuntu", system-ui, -apple-system, "Segoe UI", sans-serif;
 
@@ -101,7 +100,6 @@ a:focus-visible, button:focus-visible, select:focus-visible {
 img { display: block; max-width: 100%; }
 
 .wrap {
-  max-width: var(--max);
   margin: 0 auto;
   padding: 0 var(--gutter) 48px;
 }
@@ -220,30 +218,31 @@ img { display: block; max-width: 100%; }
 
 /* ---------- Home tiles ---------- */
 
-/* Columns per breakpoint come from the template (--cols-m, --cols-w), chosen from
-   the number of categories so rows come out even. Tiles left over in the last row
-   grow to fill it. */
+/* Each tile carries --k, the number of tiles in its row (set by layouts/home.html,
+   which puts the shorter rows, and so the bigger tiles, on top). Phones stack
+   the tiles in one column. */
 .tiles {
-  --cols: 1;
   display: flex;
   flex-wrap: wrap;
   gap: var(--gap);
 }
-@media (min-width: 860px)  { .tiles { --cols: var(--cols-m, 2); } }
-@media (min-width: 1700px) { .tiles { --cols: var(--cols-w, 4); } }
 
 .tile {
-  flex: 1 1 calc((100% - (var(--cols) - 1) * var(--gap)) / var(--cols) - 1px);
+  flex: 1 1 100%;
   min-width: 0;
   container-type: inline-size;
   position: relative;
   display: flex;
   align-items: flex-end;
-  height: 408px;
+  height: max(408px, min(28vw, (100svh - 170px - (var(--rows, 2) - 1) * var(--gap)) / var(--rows, 2)));
   overflow: hidden;
   background: var(--tint);
   color: var(--on-image);
   isolation: isolate;
+}
+@media (min-width: 860px) {
+  /* k tiles per row; the 1px slack keeps rounding from pushing a tile to the next row. */
+  .tile { flex-basis: calc((100% - (var(--k, 1) - 1) * var(--gap)) / var(--k, 1) - 1px); }
 }
 .tile:hover { color: #fff; }
 .tile-img {
@@ -414,7 +413,7 @@ img { display: block; max-width: 100%; }
 .shot {
   flex: 1 1 0;
   min-width: 0;
-  height: min(700px, 58vw, calc(100svh - 220px));
+  height: min(58vw, calc(100svh - 220px));
   min-height: 240px;
   display: flex;
   align-items: center;
@@ -478,9 +477,12 @@ img { display: block; max-width: 100%; }
   gap: 40px 72px;
   padding-top: 0;
 }
+/* Side by side: centre the portrait + text pair, so wide screens split the spare
+   space evenly instead of leaving it all on the right. */
+@media (min-width: 1000px) { .about { justify-content: center; } }
 .portrait {
   flex: 1 1 360px;
-  max-width: 480px;
+  max-width: clamp(480px, 30vw, 900px);
   aspect-ratio: 4 / 5;
   overflow: hidden;
   background: var(--portrait);
@@ -489,12 +491,12 @@ img { display: block; max-width: 100%; }
 .about-body {
   flex: 999 1 480px;
   min-width: 0;
-  max-width: 720px;
+  max-width: clamp(720px, 38vw, 1000px);
   display: flex;
   flex-direction: column;
   gap: 28px;
 }
-.bio { font-size: 17px; line-height: 1.65; color: var(--fg-soft); }
+.bio { font-size: clamp(17px, 0.45vw + 10px, 22px); line-height: 1.65; color: var(--fg-soft); }
 .bio p { margin: 0 0 0.8em; }
 .bio > :last-child { margin-bottom: 0; }
 .bio a { color: var(--fg); text-decoration: underline; text-decoration-color: var(--outline); text-underline-offset: 3px; }

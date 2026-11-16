@@ -3,7 +3,7 @@
 An image-first Hugo theme for a personal gallery homepage, with light and dark modes
 and English/Chinese out of the box. Requires Hugo ≥ 0.153.
 
-- **Home**: one big tile per category. The grid adapts to how many categories there are.
+- **Home**: one big tile per category. Up to 2 categories share one row, 3–4 use two columns, 5 or more use three; rows that can't be full go on top, so the bigger tiles lead (3 → 1 + 2, 5 → 2 + 3, 7 → 2 + 2 + 3, 8 → 2 + 3 + 3). Phones stack the tiles.
 - **Category**: a justified photo grid. Rows fill the width and every image keeps its own aspect ratio. Hovering a photo zooms it slightly and fades in its title and year. Tag filter buttons appear when they would actually filter something. The page keeps the same height whichever tag is selected.
 - **Photo**: one image per page with prev/next (←/→ keys, swipe), a counter, Esc to close, and the title, year, optional description and tags. Opened from a filtered gallery, prev/next and the counter cover only that tag. Closing returns to the gallery at the same scroll position and filter. The neighbouring photos are preloaded, so stepping is instant.
 - **About**: portrait, bio, a Journey timeline and links.

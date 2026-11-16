@@ -1,20 +1,25 @@
 {{ define "main" }}
 {{- $cats := partialCached "categories.html" . site.Language.Lang }}
 {{- $n := len $cats }}
-{{- /* Columns: medium screens (--cols-m) and wide screens (--cols-w). Picked so rows
-       come out even: 4 → 2×2 / 1×4, 3 → 3, 5 → 3+2, 6 → 3+3, 8 → 2×4 / 4+4. */}}
-{{- $three := or (eq (mod $n 3) 0) (eq $n 5) }}
-{{- $colsM := cond (le $n 1) 1 (cond $three 3 2) }}
-{{- $colsW := cond (le $n 4) (math.Max $n 1 | int) (cond $three 3 4) }}
-<main class="tiles" style="--cols-m: {{ $colsM }}; --cols-w: {{ $colsW }}">
+{{- /* Layout (from 860px up; phones always stack tiles in one column):
+       columns = n when n ≤ 2, 2 when n is 3–4, 3 when n ≥ 5.
+       Rows that can't be full go on top, one tile short each, so the bigger
+       tiles lead:  3 → 1+2,  4 → 2×2,  5 → 2+3,  6 → 3+3,  7 → 2+2+3,
+       8 → 2+3+3,  9 → 3×3.  Each tile gets --k, the number of tiles in its row. */}}
+{{- $cols := cond (le $n 2) (math.Max $n 1 | int) (cond (le $n 4) 2 3) }}
+{{- $rows := math.Ceil (div (float $n) $cols) | int }}
+{{- $shortRows := sub (mul $rows $cols) $n }}
+{{- $shortTiles := mul $shortRows (sub $cols 1) }}
+<main class="tiles" style="--rows: {{ $rows }}">
   {{- range $i, $s := $cats }}
+    {{- $k := cond (lt $i $shortTiles) (sub $cols 1) $cols }}
     {{- $img := partial "photo-resource.html" $s }}
-    <a class="tile" href="{{ $s.RelPermalink }}"{{ with $s.Params.tint }} style="--tint: {{ . | safeCSS }}"{{ end }}>
+    <a class="tile" href="{{ $s.RelPermalink }}" style="--k: {{ $k }}{{ with $s.Params.tint }}; --tint: {{ . | safeCSS }}{{ end }}">
       {{- with $img }}
         {{- partial "img.html" (dict
           "img" .
           "widths" (slice 640 960 1400 1920)
-          "sizes" (printf "(min-width: 1700px) %dvw, (min-width: 860px) %dvw, 100vw" (div 100 $colsW) (div 100 $colsM))
+          "sizes" (printf "(min-width: 860px) %dvw, 100vw" (div 100 $k))
           "alt" ""
           "class" "tile-img"
           "eager" (lt $i 2)
