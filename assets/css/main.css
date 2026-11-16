@@ -459,13 +459,20 @@ img { display: block; max-width: 100%; }
   }
 }
 @media (max-width: 600px) {
-  .stage { position: relative; gap: 0; }
-  .step { position: absolute; z-index: 1; top: 50%; transform: translateY(-50%); background: var(--scrim); color: var(--on-image); }
-  .step[rel="prev"] { left: 0; }
-  .step[rel="next"] { right: 0; }
-  .shot { height: auto; min-height: 0; }
+  /* Photo first, then a row with the arrows under it (prev left, next right). */
+  .stage { flex-wrap: wrap; justify-content: space-between; gap: 4px 0; }
+  .shot { order: -1; flex: 1 1 100%; height: auto; min-height: 0; }
   .shot img { max-height: 75svh; }
-  .meta { margin-top: 8px; }
+  .step[rel="prev"] { margin-left: -12px; }   /* line the arrow icons up with the photo's edges */
+  .step[rel="next"] { margin-right: -12px; }
+  /* Caption stacked: title, date, tags, description. */
+  .meta {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-areas: "title" "tag" "desc";
+    row-gap: 14px;
+    margin-top: 8px;
+  }
+  .meta-tags { justify-self: start; justify-content: flex-start; }
 }
 
 /* ---------- About ---------- */
