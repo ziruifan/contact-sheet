@@ -200,8 +200,7 @@ img { display: block; max-width: 100%; }
   color: var(--dim);
 }
 .home .site-footer { margin-top: 32px; }
-.site-footer .logo img { height: 24px; width: auto; margin: 4px 0; opacity: 0.85; }
-.site-footer .logo:hover img { opacity: 1; }
+.site-footer .logo img { height: 24px; width: auto; margin: 4px 0; }
 
 /* ---------- Shared type ---------- */
 
@@ -320,7 +319,14 @@ img { display: block; max-width: 100%; }
 }
 .item[hidden] { display: none; }
 .gallery-spacer { flex: 100000 1 0; height: 0; }
-@media (max-width: 600px) { :root { --row: 160px; } }
+@media (max-width: 600px) {
+  :root { --row: 160px; }
+  /* Tag buttons always sit under the title, left-aligned with it. */
+  .page-head { flex-direction: column; align-items: flex-start; gap: 16px; padding-top: 24px; }   /* same gap below the nav as the About page */
+  /* Most phone rows hold one full-width photo, so let the last row stretch too
+     instead of leaving its photo at its narrower natural width. */
+  .gallery-spacer { display: none; }
+}
 
 .frame {
   position: relative;
@@ -530,6 +536,7 @@ img { display: block; max-width: 100%; }
 .links a:first-child { color: var(--fg); }
 
 @media (max-width: 600px) {
+  .about { padding-top: 24px; }   /* room between the wrapped navigation and the portrait */
   .portrait { max-width: none; }
   .bio { font-size: 16px; }
 }
