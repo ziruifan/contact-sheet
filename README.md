@@ -94,7 +94,7 @@ Then drop the image into the new folder and set `draft: false`.
 | `title`    | Caption title                                                           |
 | `date`     | Sort order (newest first) and default year                              |
 | `year`     | Optional. Shown instead of the year from `date`                         |
-| `tags`     | List of tags, e.g. `[Painting, Helmets]`. Each becomes a filter button on the category page. Translate them in `index.zh.md` |
+| `tags`     | List of tags, e.g. `[Consectetur, Adipiscing]`. Each becomes a filter button on the category page. Translate them in `index.zh.md` |
 | `weight`   | Optional manual order (lower first)                                     |
 | `featured` | Optional. Use this photo as the category's homepage tile (if no `cover.*`)|
 | `image`    | Optional. File name, if the folder holds more than one image            |
@@ -146,3 +146,7 @@ The site config mounts `content/` into every language (see "Site config"). A pho
 without an `index.zh.md` still appears on the Chinese site, using its English text.
 
 UI strings live in `i18n/en.toml` and `i18n/zh.toml`.
+
+## License
+
+[MIT](LICENSE) © 2026 Fan Zirui
