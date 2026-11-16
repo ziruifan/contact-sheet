@@ -14,7 +14,7 @@ and English/Chinese out of the box. Requires Hugo ≥ 0.153.
 ## Example site
 
 `exampleSite/` is a complete demo with Lorem Ipsum text (the Chinese pages use the
-千字文, the traditional Chinese filler text). It has 24 abstract photos in four
+千字文, the traditional Chinese filler text). It has 36 abstract photos in four
 categories, with tags, descriptions and an About page, in English and Chinese.
 Preview it from the theme folder:
 
