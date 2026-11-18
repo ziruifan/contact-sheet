@@ -2,7 +2,8 @@
 About page. Set `layout: about` in front matter.
 
   photos: [lake.jpg, hills.jpg]   # optional; images in this folder, in this order.
-                                  # Without it, every image in the folder, by file name.
+                                  # Without it, every image in the folder, by file name
+                                  # (except images used in the bio text).
   links:                          # the first link is highlighted
     - name: me@example.com
       url: mailto:me@example.com
@@ -17,7 +18,10 @@ The page body is the bio. Text and links on the left, the photos on the right
     {{- with $.Resources.GetMatch . }}{{ $photos = $photos | append . }}{{ else }}{{ warnf "contact-sheet: about photo %q not found in %s" . $.File.Dir }}{{ end }}
   {{- end }}
 {{- else }}
-  {{- $photos = (.Resources.ByType "image").ByName }}
+  {{- $used := partial "content-images.html" . }}
+  {{- range (.Resources.ByType "image").ByName }}
+    {{- if not (in $used .Name) }}{{ $photos = $photos | append . }}{{ end }}
+  {{- end }}
 {{- end }}
 <main class="about">
   <div class="about-body">

@@ -72,13 +72,25 @@ detail view (prev/next, counter, caption). Anything else renders as plain text.
             "eager" true
           ) }}
         </div>
+        {{- /* Opened from a gallery: until the full photo arrives, show the thumbnail the
+               gallery already loaded behind it (main.js stores it on click), so the
+               gallery-to-photo morph never lands on an empty box. Runs before the first
+               paint. */}}
+        <script>
+        (function (img) {
+          try {
+            var t = JSON.parse(sessionStorage.getItem('contact-sheet:thumb') || 'null');
+            if (t && !img.complete && t.u === decodeURI(location.pathname)) img.style.backgroundImage = 'url("' + t.src + '")';
+          } catch (e) { /* storage blocked */ }
+        })(document.currentScript.previousElementSibling.querySelector('img'));
+        </script>
         {{- if gt $n 1 }}
         <a class="step" href="{{ $next.RelPermalink }}" aria-label="{{ T "next" }}" rel="next" data-next>
           <svg aria-hidden="true" width="24" height="24" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9h12M10 4l5 5-5 5"/></svg>
         </a>
         {{- end }}
       </div>
-      {{- $hasDesc := .Content | plainify | strings.TrimSpace }}
+      {{- $hasDesc := ne (.Content | strings.TrimSpace) "" }}{{/* text and/or images */}}
       <div class="meta{{ if not $hasDesc }} meta--no-desc{{ end }}">
         <div class="meta-title">
           <div class="meta-path">

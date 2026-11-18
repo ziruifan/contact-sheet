@@ -205,16 +205,28 @@ if (gallery) {
     return frames.find((f) => !f.closest('.item').hidden && normPath(new URL(f.href).pathname) === path) || null;
   };
   const morph = (el, transition) => {
+    // A gallery restored with the back button can still carry the name from the
+    // last morph; two elements with one name would cancel the transition.
+    for (const f of frames) f.style.viewTransitionName = '';
     if (!el || !transition) return;
     el.style.viewTransitionName = 'cs-photo';
     transition.finished.finally(() => { el.style.viewTransitionName = ''; });
   };
   window.addEventListener('pageswap', (e) => {
-    if (e.viewTransition && e.activation && e.activation.entry) morph(thumbFor(e.activation.entry.url), e.viewTransition);
+    if (!e.activation || !e.activation.entry) return;
+    const frame = thumbFor(e.activation.entry.url);
+    // The thumbnail the browser actually shows (already cached): the photo page puts
+    // it behind the full photo until that arrives (see layouts/page.html).
+    const img = frame && frame.querySelector('img');
+    if (img && img.currentSrc) {
+      store.set('contact-sheet:thumb', JSON.stringify({ u: normPath(new URL(e.activation.entry.url).pathname), src: img.currentSrc }));
+    }
+    if (e.viewTransition) morph(frame, e.viewTransition);
   });
   window.addEventListener('pagereveal', (e) => {
     const from = window.navigation && window.navigation.activation && window.navigation.activation.from;
     if (e.viewTransition && from) morph(thumbFor(from.url), e.viewTransition);
+    else for (const f of frames) f.style.viewTransitionName = '';
   });
 }
 

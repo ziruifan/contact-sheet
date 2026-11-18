@@ -137,10 +137,29 @@ Then drop the image into the new folder and set `draft: false`.
 | `tags`     | List of tags, e.g. `[Consectetur, Adipiscing]`. Each links to its tag page (see "Tags"). Translate them in `index.zh.md` |
 | `weight`   | Optional manual order (lower first)                                     |
 | `featured` | Optional. Use this photo as the category's homepage tile (if no `cover.*`)|
-| `image`    | Optional. File name, if the folder holds more than one image            |
+| `image`    | Optional. Which image is the photo, if the folder holds several (images used in the description never are) |
 | `detail`   | Optional. Plain text on the right of the caption, line breaks kept (see "Detail") |
 
 The page body is the description. Leave it empty and the description block is left out.
+
+### Images in descriptions
+
+A description can include images. Put them in the photo's folder and use them in
+Markdown; the optional title becomes a caption:
+
+```markdown
+Text before the image.
+
+![The light behind the ridges](detail.jpg "A caption under the image")
+
+Text after it.
+```
+
+They are resized to responsive WebP like every other image and load lazily. An image
+used in the description (in any language) is never picked as the photo itself, so no
+`image:` line is needed. On wide screens the photo keeps its size and the page scrolls
+to the rest of a long description. The same works in the About bio and plain pages.
+The example site's first Lorem photo has one.
 
 ### Detail
 

@@ -1,0 +1,31 @@
+{{- /*
+Markdown images (![alt](file.jpg "Caption")) in descriptions, the About bio and
+plain pages. An image next to the page (in its folder) or in assets/ goes through
+the theme's image pipeline: resized WebP in several sizes, lazy loading, phone
+photos turned the right way up. Anything else (a remote URL) is used as is. The
+optional title becomes a small caption under the image.
+
+Spans, not <figure>, because Markdown puts an image inside a paragraph.
+*/ -}}
+{{- $u := urls.Parse .Destination }}
+{{- $img := false }}
+{{- if not $u.IsAbs }}
+  {{- with .PageInner.Resources.Get (strings.TrimPrefix "./" $u.Path) }}{{ $img = . }}
+  {{- else }}{{ with resources.Get (strings.TrimPrefix "/" $u.Path) }}{{ $img = . }}{{ end }}
+  {{- end }}
+  {{- if not $img }}{{ warnf "contact-sheet: image %q not found for %s" .Destination .PageInner.Path }}{{ end }}
+{{- end -}}
+<span class="md-figure">
+  {{- if and $img (eq $img.ResourceType "image") }}
+    {{- partial "img.html" (dict
+      "img" $img
+      "widths" (slice 480 800 1280 1600)
+      "sizes" "(max-width: 600px) 100vw, 640px"
+      "alt" .PlainText
+    ) }}
+  {{- else }}
+    <img src="{{ with $img }}{{ .RelPermalink }}{{ else }}{{ .Destination | safeURL }}{{ end }}" alt="{{ .PlainText }}" loading="lazy" decoding="async">
+  {{- end }}
+  {{- with .Title }}<span class="md-caption">{{ . }}</span>{{ end -}}
+</span>
+{{- /* */ -}}

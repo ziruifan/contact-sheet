@@ -10,3 +10,7 @@ detail: |
 ---
 
 Do eiusmod tempor incididunt ut labore et dolore magna aliqua. Reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.
+
+![The light behind the ridges](detail.jpg "Ut enim ad minim veniam, quis nostrud exercitation.")
+
+Ullamco laboris nisi ut aliquip ex ea commodo consequat.

@@ -1,0 +1,18 @@
+{{- /*
+Returns the file names of the images a page's text uses, in Markdown
+(![alt](detail.jpg)) or HTML (<img src="detail.jpg">), across all of its
+translations. They are told apart from the page's own photo(s): a description
+image is never picked as the photo of a photo page, nor listed on the About page.
+
+@context {page} .
+*/ -}}
+{{- $names := slice }}
+{{- range .AllTranslations }}
+  {{- range findRESubmatch `!\[[^\]]*\]\(\s*<?([^)\s>]+)` .RawContent -1 }}
+    {{- $names = $names | append (strings.TrimPrefix "./" (index . 1)) }}
+  {{- end }}
+  {{- range findRESubmatch `<img[^>]+src=["']([^"']+)["']` .RawContent -1 }}
+    {{- $names = $names | append (strings.TrimPrefix "./" (index . 1)) }}
+  {{- end }}
+{{- end }}
+{{- return (uniq $names) }}

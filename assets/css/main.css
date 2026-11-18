@@ -298,6 +298,13 @@ img { display: block; max-width: 100%; }
 .prose a { color: var(--fg); text-decoration: underline; text-decoration-color: var(--outline); text-underline-offset: 3px; }
 .prose a:hover { text-decoration-color: currentColor; }
 
+/* Markdown images (layouts/_markup/render-image.html): full column width at most,
+   their own shape, with an optional caption below. */
+.md-figure { display: block; margin: 1.25em 0; }
+.md-figure img { display: block; max-width: 100%; height: auto; background: var(--tint); }
+.md-caption { display: block; margin-top: 8px; font-size: 0.8125rem; line-height: 1.5; color: var(--dim); }
+p > .md-figure:only-child { margin: 0; }   /* an image on its own line: the paragraph spaces it */
+
 /* ---------- Home tiles ---------- */
 
 /* Each tile carries --k, the number of tiles in its row (set by layouts/home.html,
@@ -452,7 +459,12 @@ img { display: block; max-width: 100%; }
 /* The stage (arrows + image) takes the height left after the header and the
    caption; the image is fitted inside it. */
 .viewer { display: flex; flex-direction: column; }
-.stage { flex: 1 1 0; min-height: 240px; display: flex; align-items: center; gap: 16px; }
+/* Never much shorter than a screen minus a caption, so a long description makes the
+   page scroll instead of shrinking the photo. With images in the description, the
+   photo keeps exactly the size it has on a page with a one-row caption (header and
+   caption take 278px there). */
+.stage { flex: 1 1 0; min-height: max(240px, min(58vw, calc(100svh - 340px))); display: flex; align-items: center; gap: 16px; }
+.viewer:has(.meta-desc .md-figure) .stage { min-height: max(240px, min(58vw, calc(100svh - 278px))); }
 .step {
   flex: none;
   display: flex;
@@ -478,7 +490,7 @@ img { display: block; max-width: 100%; }
   height: auto;
   max-width: 100%;
   max-height: 100%;
-  background: var(--tint);
+  background: var(--tint) center / cover no-repeat;   /* the gallery thumbnail goes here while loading */
 }
 
 .meta {

@@ -1,7 +1,8 @@
 {{- /*
 Returns the main image resource for a page, or nothing.
 
-  Photo page: the image named by front matter `image`, else the first image in the bundle.
+  Photo page: the image named by front matter `image`, else the first image in the
+              bundle that the description doesn't use (see content-images.html).
   Section:    `cover.*` in the section folder, else the image of a photo marked
               `featured: true`, else the image of the first photo.
   Other page: same as a photo page (e.g. the portrait on the About page).
@@ -25,6 +26,12 @@ Returns the main image resource for a page, or nothing.
 {{- else if .IsPage }}
   {{- with .Params.image }}
     {{- $img = $.Resources.GetMatch . }}
+  {{- end }}
+  {{- if not $img }}
+    {{- $used := partial "content-images.html" . }}
+    {{- range .Resources.ByType "image" }}
+      {{- if and (not $img) (not (in $used .Name)) }}{{ $img = . }}{{ end }}
+    {{- end }}
   {{- end }}
   {{- if not $img }}
     {{- with .Resources.ByType "image" }}{{ $img = index . 0 }}{{ end }}
