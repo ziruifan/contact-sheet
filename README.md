@@ -185,15 +185,13 @@ The theme picks the first of these that exists: `cover.*` in the category folder
 ```
 
 Per-language values (a translated site name, for example) go under
-`[languages.zh]` and `[languages.zh.params]`. The language menu lists each language by
-its `languageName` (use the full name, e.g. 'English'); the bar shows the current one's
-`languageShort` param, or its code in capitals:
+`[languages.zh]` and `[languages.zh.params]`. The bar shows "Language" (translated through
+the `language` key in `i18n/`), and the menu lists each language by its `languageName`,
+so use the full name:
 
 ```toml
 [languages.en]
   languageName = 'English'
-  [languages.en.params]
-    languageShort = 'EN'
 ```
 
 ## Favicon

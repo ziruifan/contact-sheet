@@ -29,20 +29,17 @@ defaultContentLanguageInSubdir = false
   description = 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.'
 
 [languages]
-  # languageName is shown in the language menu; params.languageShort in the bar.
+  # languageName is shown in the language menu.
   [languages.en]
     languageName = 'English'
     languageCode = 'en'
     weight = 1
-    [languages.en.params]
-      languageShort = 'EN'
   [languages.zh]
     languageName = '中文'
     languageCode = 'zh-Hans'
     weight = 2
     title = '天地玄黄'
     [languages.zh.params]
-      languageShort = '中文'
       author = '天地玄黄'
       description = '天地玄黄，宇宙洪荒。'
 
