@@ -476,18 +476,24 @@ p > .md-figure:only-child { margin: 0; }   /* an image on its own line: the para
 }
 .step[hidden] { display: none; }
 .step:hover { color: var(--hover); background: var(--hover-bg); }
+/* The photo is sized from its known shape (--r) and natural width (--w), set by
+   layouts/page.html, not from the loaded file: it has its final size on the very
+   first frame, even while it is still downloading, so the gallery-to-photo morph
+   aims at the right box. Contained in the stage, never enlarged past its own size. */
 .shot {
   flex: 1 1 0;
   align-self: stretch;
   position: relative;
   min-width: 0;
+  container-type: size;   /* lets the photo measure the stage (cqw/cqh) */
 }
 .shot img {
-  position: absolute;   /* centred in the stage at its own aspect ratio */
+  position: absolute;   /* centred in the stage */
   inset: 0;
   margin: auto;
-  width: auto;
+  width: min(100cqw, calc(100cqh * var(--r, 1.5)), var(--w, 100000px));
   height: auto;
+  aspect-ratio: var(--r);
   max-width: 100%;
   max-height: 100%;
   background: var(--tint) center / cover no-repeat;   /* the gallery thumbnail goes here while loading */
@@ -534,8 +540,8 @@ p > .md-figure:only-child { margin: 0; }   /* an image on its own line: the para
   /* Photo first, then a row with the arrows under it (prev left, next right). */
   .stage { flex-wrap: wrap; justify-content: space-between; gap: 4px 0; }
   .stage { flex: none; min-height: 0; }
-  .shot { order: -1; flex: 1 1 100%; position: static; }
-  .shot img { position: static; margin: 0 auto; max-height: 75svh; }
+  .shot { order: -1; flex: 1 1 100%; position: static; container-type: normal; }
+  .shot img { position: static; margin: 0 auto; width: min(100%, calc(75svh * var(--r, 1.5)), var(--w, 100000px)); max-height: 75svh; }
   .step[rel="prev"] { margin-left: -12px; }   /* line the arrow icons up with the photo's edges */
   .step[rel="next"] { margin-right: -12px; }
   .meta {

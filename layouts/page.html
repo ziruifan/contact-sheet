@@ -63,9 +63,13 @@ detail view (prev/next, counter, caption). Anything else renders as plain text.
           <svg aria-hidden="true" width="24" height="24" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 9H3M8 4 3 9l5 5"/></svg>
         </a>
         {{- end }}
-        <div class="shot">
+        {{- /* The photo's shape and natural width, so CSS can size it before it has
+               loaded (the gallery-to-photo morph measures it on the first frame). */}}
+        {{- $photo := partial "photo-resource.html" . }}
+        {{- $big := partial "img-variant.html" (dict "img" $photo "width" 3000) }}
+        <div class="shot"{{ if and $big.Width $big.Height }} style="--r: {{ printf "%.4f" (div (float $big.Width) $big.Height) }}; --w: {{ $big.Width }}px"{{ end }}>
           {{- partial "img.html" (dict
-            "img" (partial "photo-resource.html" .)
+            "img" $photo
             "widths" (slice 800 1200 1800 2400 3000)
             "sizes" "(max-width: 600px) 100vw, calc(100vw - 176px)"
             "alt" .Title
