@@ -277,6 +277,7 @@ The theme picks the first of these that exists: `cover.*` in the category folder
   copyright = ''         # optional, replaces "© <year> <author>"
   description = ''       # fallback meta description
   googleFonts = true     # load web fonts from Google Fonts
+  photoCounter = true    # the "3 / 9" counter on photo pages; false hides it
 ```
 
 Per-language values (a translated site name, for example) go under

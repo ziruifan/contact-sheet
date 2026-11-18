@@ -12,6 +12,9 @@
   logo = ''
   # Load Ubuntu from Google Fonts. Set false to self-host or use system fonts.
   googleFonts = true
+  # The "3 / 9" counter at the top of photo pages. Set false to hide it (also
+  # per category with `cascade` in its _index.md, or per photo in front matter).
+  photoCounter = true
 
 [markup.goldmark.renderer]
   unsafe = false

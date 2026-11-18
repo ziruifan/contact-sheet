@@ -15,7 +15,13 @@ detail view (prev/next, counter, caption). Anything else renders as plain text.
         <svg aria-hidden="true" width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M10 3 5 8l5 5"/></svg>
         <span data-back-label>{{ $s.LinkTitle }}</span>
       </a>
+      {{- /* "3 / 9" between the back link and the language menu; `photoCounter = false`
+             (site params, a category's cascade, or a photo) hides it. */}}
+      {{- if ne (printf "%v" (.Param "photoCounter")) "false" }}{{/* false, or "false" from an environment variable */}}
       <span class="counter" data-counter>{{ add $idx 1 }} / {{ len $pages }}</span>
+      {{- else }}
+      <span></span>
+      {{- end }}
       <div class="photo-controls">
         {{- partial "lang-switch.html" . }}
       </div>
