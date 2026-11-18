@@ -1,10 +1,15 @@
 {{- /*
 Main navigation. Uses the "main" menu when one is defined (front matter `menus: main`
 or site config); otherwise lists the categories followed by the About page.
+A category with subcategories is a dropdown listing them. Its name links to the
+category page and the arrow next to it opens the menu. It is a <details> disclosure
+like the language menu, so it works without JavaScript; main.js adds hover-to-open
+with a mouse. On the current category's gallery, the name and the menu items switch
+the gallery in place (data-filter-group).
 @context {page} .
 */ -}}
 {{- $page := . }}
-<nav class="nav" aria-label="Main">
+<nav class="nav" id="site-nav" aria-label="Main">
   {{- with site.Menus.main }}
     {{- range . }}
       {{- $current := or ($page.IsMenuCurrent .Menu .) ($page.HasMenuCurrent .Menu .) }}
@@ -12,7 +17,24 @@ or site config); otherwise lists the categories followed by the About page.
     {{- end }}
   {{- else }}
     {{- range partialCached "categories.html" . site.Language.Lang }}
-      <a href="{{ .RelPermalink }}"{{ if or ($page.Eq .) ($page.IsDescendant .) }} aria-current="page"{{ end }}>{{ .LinkTitle }}</a>
+      {{- $cat := . }}
+      {{- $inCat := or ($page.Eq $cat) ($page.IsDescendant $cat) }}
+      {{- with $cat.Sections }}
+      <details class="menu nav-drop{{ if $inCat }} is-current{{ end }}" data-menu{{ if and $page.IsSection $inCat }} data-filter-group{{ end }}>
+        <summary>
+          {{- /* The name is a link to the category; the rest of the summary (the arrow) opens the menu. */}}
+          <a href="{{ $cat.RelPermalink }}" data-filter="all" data-title="{{ printf "%s · %s" $cat.Title site.Title }}"{{ if $page.Eq $cat }} aria-current="page"{{ end }}>{{ $cat.LinkTitle }}</a>
+          <span class="menu-toggle"><svg aria-hidden="true" width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3.5 5 6.5l3-3"/></svg></span>
+        </summary>
+        <ul class="menu-list">
+          {{- range . }}
+          <li><a href="{{ .RelPermalink }}" data-filter="{{ path.Base .Path }}" data-name="{{ .Title }}" data-title="{{ printf "%s · %s" .Title site.Title }}"{{ if $page.Eq . }} aria-current="page"{{ end }}>{{ .LinkTitle }}</a></li>
+          {{- end }}
+        </ul>
+      </details>
+      {{- else }}
+      <a href="{{ $cat.RelPermalink }}"{{ if $inCat }} aria-current="page"{{ end }}>{{ $cat.LinkTitle }}</a>
+      {{- end }}
     {{- end }}
     {{- with site.GetPage "/about" }}
       <a href="{{ .RelPermalink }}"{{ if $page.Eq . }} aria-current="page"{{ end }}>{{ .LinkTitle }}</a>

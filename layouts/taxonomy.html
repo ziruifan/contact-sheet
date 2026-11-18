@@ -1,0 +1,10 @@
+{{- /* The tag index (/tags/): every tag, most used first, with its photo count. */ -}}
+{{ define "main" }}
+<main class="tag-index">
+  <div class="chips">
+    {{- range .Data.Terms.ByCount }}
+    <a class="chip" href="{{ .Page.RelPermalink }}">{{ .Page.LinkTitle }}<span class="chip-count">{{ .Count }}</span></a>
+    {{- end }}
+  </div>
+</main>
+{{ end }}

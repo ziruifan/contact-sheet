@@ -1,4 +1,9 @@
 ---
 title: Ipsum
-tint: '#a6d6d0'
+tint: '#332f35'
+cascade:
+  params:
+    detail: |
+      Duis aute irure
+      In reprehenderit
 ---

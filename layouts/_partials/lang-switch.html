@@ -1,19 +1,21 @@
 {{- /*
 Language menu. Hidden when the site has a single language.
-Each item links to this page in that language, or that language's homepage.
-A <details> disclosure, so it works without JavaScript; main.js adds closing on
-outside click / Escape and flips the menu when it would overflow the left edge.
+Each item links to this page in that language, or that language's homepage, and
+shows the language's full name (`languageName`). The bar shows a short label:
+`languageShort` in the language's params, else the language code in capitals.
+A <details> disclosure, so it works without JavaScript; main.js adds hover,
+closing on outside click / Escape, and lines the items up under the label.
 @context {page} .
 */ -}}
 {{- if gt (len site.Languages) 1 }}
   {{- $page := . }}
   {{- $current := site.Language }}
-  <details class="lang" data-lang>
+  <details class="menu lang" data-menu>
     <summary aria-label="{{ T "language" }}: {{ $current.LanguageName | default (upper $current.Lang) }}">
-      <span>{{ $current.LanguageName | default (upper $current.Lang) }}</span>
+      <span>{{ site.Params.languageShort | default (upper $current.Lang) }}</span>
       <svg aria-hidden="true" width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3.5 5 6.5l3-3"/></svg>
     </summary>
-    <ul class="lang-menu">
+    <ul class="menu-list">
       {{- range site.Languages }}
         {{- $lang := .Lang }}
         {{- $url := "" }}

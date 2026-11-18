@@ -3,19 +3,24 @@
 An image-first Hugo theme for a personal gallery homepage, with light and dark modes
 and English/Chinese out of the box. Requires Hugo ≥ 0.153.
 
-- **Home**: one big tile per category. Up to 2 categories share one row, 3–4 use two columns, 5 or more use three; rows that can't be full go on top, so the bigger tiles lead (3 → 1 + 2, 5 → 2 + 3, 7 → 2 + 2 + 3, 8 → 2 + 3 + 3). Phones stack the tiles.
-- **Category**: a justified photo grid. Rows fill the width and every image keeps its own aspect ratio. Hovering a photo zooms it slightly and fades in its title and year. Tag filter buttons appear when they would actually filter something. The page keeps the same height whichever tag is selected.
-- **Photo**: one image per page with prev/next (←/→ keys, swipe), a counter, Esc to close, and the title, year, optional description and tags. Opened from a filtered gallery, prev/next and the counter cover only that tag. Closing returns to the gallery at the same scroll position and filter. The neighbouring photos are preloaded, so stepping is instant.
-- **About**: portrait, bio, a Journey timeline and links.
+- **Home**: exactly one screen tall, filled by one big tile per category. Up to 2 categories share one row, 3–4 use two columns, 5 or more use three; rows that can't be full go on top, so the bigger tiles lead (3 → 1 + 2, 5 → 2 + 3, 7 → 2 + 2 + 3, 8 → 2 + 3 + 3). Phones stack the tiles.
+- **Category**: a justified photo grid. Rows fill the width and every image keeps its own aspect ratio. Hovering a photo zooms it slightly. Optional subcategories are listed in a dropdown under the category's name in the navigation; each has its own page, and switching between them on the category page is instant.
+- **Tags**: every tag has a page with its photos from all categories, and `/tags/` lists them all.
+- **Photo**: one image per page with prev/next (←/→ keys, swipe), a counter, Esc to close, and a caption: category · subcategory, title, year, tags, an optional description, and an optional detail text. Prev/next and the counter follow the gallery the photo was opened from: the category, one subcategory, or a tag page. Closing returns to that gallery at the same scroll position. The neighbouring photos are preloaded, so stepping is instant.
+- **About**: bio and links on the left, photos filling the right: one photo is shown whole; several use the same tile grid as the homepage.
+- **Breadcrumbs**: pages have no big heading; the header shows where you are after the site name instead ("Lorem Ipsum · Lorem · Eiusmod", "Lorem Ipsum · Tags · Consectetur").
+- **Page height**: every page is at least one screen tall, with the footer at the bottom; the photo viewer fits the image into the screen.
 - **Light and dark**: picked automatically from the visitor's browser/OS setting (`prefers-color-scheme`). Colours are CSS variables at the top of `assets/css/main.css`.
-- **Multilingual**: the language menu matches the site's style, works without JavaScript, and hides itself when the site has only one language.
+- **Multilingual**: the language menu works like the category dropdowns (hover or click, works without JavaScript) and hides itself when the site has only one language.
+- **Menus**: an open dropdown extends the top bar downwards across the full width, with its items in a row under the name.
+- **Folding navigation**: whenever the name, breadcrumbs and navigation don't fit comfortably on one row (at any width, depending on the page), the navigation folds behind a menu button; it opens as a panel under the header laid out as a table, each category (and the language menu) with all its items in a row beside it.
 - Images are resized to responsive WebP automatically, and phone photos are rotated the right way up.
 
 ## Example site
 
 `exampleSite/` is a complete demo with Lorem Ipsum text (the Chinese pages use the
-千字文, the traditional Chinese filler text). It has 36 abstract photos in four
-categories, with tags, descriptions and an About page, in English and Chinese.
+千字文, the traditional Chinese filler text). It has 36 generated photos (landscapes, city, water, night) in four
+categories (each split into subcategories), with tags shared across categories, descriptions and an About page, in English and Chinese.
 See it live at **https://ziruifan.github.io/contact-sheet/** (deployed by
 `.github/workflows/pages.yml` on every push to `main`), or preview it from the theme folder:
 
@@ -28,12 +33,16 @@ into your site and delete the `themesDir` line from the config.
 
 ## Site config
 
-Two settings have to be in your site's `hugo.toml`, because Hugo ignores them in a
-theme's config. `exampleSite/hugo.toml` already has both:
+These settings have to be in your site's `hugo.toml`, because a theme's config can't
+set them. `exampleSite/hugo.toml` already has them:
 
 ```toml
 theme = 'contact-sheet'
-disableKinds = ['taxonomy', 'term']   # tags are only used for filtering; no tag pages
+
+# Tag pages. This also turns off Hugo's default `categories` taxonomy, which the
+# theme doesn't use (categories are folders, see below).
+[taxonomies]
+  tag = 'tags'
 
 # Every page exists in every language (see "Translations without gaps").
 [[module.mounts]]
@@ -59,7 +68,33 @@ still builds and is reachable by URL. It is just not linked from the homepage or
 
 Category `_index.md` fields: `title`, `weight` (only used without `categories`),
 `tint` (placeholder colour behind images while they load). The body, if any, is shown
-under the heading.
+above the gallery.
+
+### Subcategories
+
+A folder with an `_index.md` inside a category is a subcategory. Put its photos in it:
+
+```
+content/lorem/eiusmod/_index.md       # title, weight (menu order)
+content/lorem/eiusmod/_index.zh.md    # Chinese title
+content/lorem/eiusmod/ridges-dusk/    # a photo
+```
+
+In the navigation, a category with subcategories becomes a dropdown listing them.
+The category's name still links to the category page; the arrow next to it opens
+the menu (with a mouse, hovering opens it too). The category page shows
+all of its photos. Each subcategory also has its own page (`/lorem/eiusmod/`): the
+same gallery showing only that subcategory, with its name in the breadcrumbs
+("Lorem Ipsum · Lorem · Eiusmod"), so it can be linked to. On the category's own pages, the
+dropdown switches the gallery in place. Photos can also sit directly in the
+category folder (they appear only on the category page itself, not on any subcategory page).
+
+## Tags
+
+Tags are shared across categories. Each tag gets a page (`/tags/<tag>/`) with all its
+photos, and the tags on a photo page link there. `/tags/` lists every tag with its
+photo count; it isn't linked from the navigation, so add it to a menu if you want
+it there. Translate tags in `index.zh.md`; the Chinese site gets its own tag pages.
 
 ## Content layout
 
@@ -67,22 +102,26 @@ under the heading.
 content/
   _index.md                 # homepage (title only)
   about/
-    index.md                # layout: about  (see layouts/about.html for fields)
-    portrait.jpg
+    index.md                # layout: about; body = bio; links; photos: [a.jpg, b.jpg] (optional order)
+    ridges-rose.jpg         # one or more photos (without `photos`, all images by file name)
+    sea-mist.jpg
   lorem/                    # one folder per category, listed in params.categories
     _index.md               # title, tint (placeholder colour, optional)
     _index.zh.md            # Chinese title
     cover.jpg               # optional homepage tile image
-    bands-peach/            # one folder per photo
-      index.md              # title, date, tags, optional year/weight/featured; body = description
-      index.zh.md           # optional translation
-      bands-peach.jpg       # the photo (any file name)
+    eiusmod/                # optional subcategory
+      _index.md             # title, weight
+      _index.zh.md          # Chinese title
+      ridges-dusk/          # one folder per photo
+        index.md            # title, date, tags, optional year/weight/featured; body = description
+        index.zh.md         # optional translation
+        ridges-dusk.jpg     # the photo (any file name)
 ```
 
 Create a new photo with:
 
 ```
-hugo new content --kind photo lorem/my-photo
+hugo new content --kind photo lorem/eiusmod/my-photo
 ```
 
 Then drop the image into the new folder and set `draft: false`.
@@ -94,12 +133,40 @@ Then drop the image into the new folder and set `draft: false`.
 | `title`    | Caption title                                                           |
 | `date`     | Sort order (newest first) and default year                              |
 | `year`     | Optional. Shown instead of the year from `date`                         |
-| `tags`     | List of tags, e.g. `[Consectetur, Adipiscing]`. Each becomes a filter button on the category page. Translate them in `index.zh.md` |
+| `tags`     | List of tags, e.g. `[Consectetur, Adipiscing]`. Each links to its tag page (see "Tags"). Translate them in `index.zh.md` |
 | `weight`   | Optional manual order (lower first)                                     |
 | `featured` | Optional. Use this photo as the category's homepage tile (if no `cover.*`)|
 | `image`    | Optional. File name, if the folder holds more than one image            |
+| `detail`   | Optional. Plain text on the right of the caption, line breaks kept (see "Detail") |
 
 The page body is the description. Leave it empty and the description block is left out.
+
+### Detail
+
+`detail` in a photo's front matter is plain text shown on the right of the caption
+(between the title block and the description on phones), with its line breaks kept. Use it for anything:
+place, camera, print size, materials.
+
+```yaml
+detail: |
+  Lisbon, Portugal
+  Fujifilm X-T5 · 23mm
+```
+
+To give a whole category the same detail, set it with `cascade` in the category's
+`_index.md`; a photo's own `detail` still wins:
+
+```yaml
+---
+title: Ipsum
+cascade:
+  params:
+    detail: Ut enim ad minim veniam
+---
+```
+
+In the example site, Lorem and Dolor photos have their own `detail`; Ipsum and Amet use
+the `cascade` above.
 
 ### Homepage tile image
 
@@ -118,7 +185,16 @@ The theme picks the first of these that exists: `cover.*` in the category folder
 ```
 
 Per-language values (a translated site name, for example) go under
-`[languages.zh]` and `[languages.zh.params]`.
+`[languages.zh]` and `[languages.zh.params]`. The language menu lists each language by
+its `languageName` (use the full name, e.g. 'English'); the bar shows the current one's
+`languageShort` param, or its code in capitals:
+
+```toml
+[languages.en]
+  languageName = 'English'
+  [languages.en.params]
+    languageShort = 'EN'
+```
 
 ## Favicon
 

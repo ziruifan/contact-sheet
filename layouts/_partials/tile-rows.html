@@ -1,0 +1,22 @@
+{{- /*
+Tile grid layout shared by the homepage and the About photos. Given n tiles,
+returns dict "rows" (row count) and "k" (for each tile, the number of tiles in
+its row, which CSS turns into its width).
+
+Columns = n when n ≤ 2, 2 when n is 3–4, 3 when n ≥ 5. Rows that can't be full go
+on top, one tile short each, so the bigger tiles lead:  3 → 1+2,  4 → 2×2,
+5 → 2+3,  6 → 3+3,  7 → 2+2+3,  8 → 2+3+3,  9 → 3×3.
+
+@context {int} .   the number of tiles
+*/ -}}
+{{- $n := . }}
+{{- $cols := cond (le $n 2) (math.Max $n 1 | int) (cond (le $n 4) 2 3) }}
+{{- $rows := math.Ceil (div (float $n) $cols) | int }}
+{{- $shortTiles := mul (sub (mul $rows $cols) $n) (sub $cols 1) }}
+{{- $k := slice }}
+{{- if gt $n 0 }}
+  {{- range $i := seq 0 (sub $n 1) }}
+    {{- $k = $k | append (cond (lt $i $shortTiles) (sub $cols 1) $cols) }}
+  {{- end }}
+{{- end }}
+{{- return dict "rows" $rows "k" $k }}

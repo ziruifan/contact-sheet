@@ -1,0 +1,11 @@
+{{- /* A tag page (/tags/<tag>/): every photo with that tag, from all categories. */ -}}
+{{ define "main" }}
+{{- $key := path.Base .Path }}
+{{- with .Content }}<div class="section-intro prose">{{ . }}</div>{{ end }}
+<main class="gallery" data-gallery>
+  {{- range $i, $p := .Pages }}
+    {{- partial "gallery-item.html" (dict "page" $p "index" $i "query" (printf "?tag=%s" $key)) }}
+  {{- end }}
+  <div class="gallery-spacer" aria-hidden="true"></div>
+</main>
+{{ end }}

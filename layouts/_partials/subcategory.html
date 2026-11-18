@@ -1,0 +1,16 @@
+{{- /*
+Returns the subcategory a page belongs to: the section one level below its
+category (content/<category>/<subcategory>/), or false when there is none.
+Works for photo pages and for the subcategory page itself.
+
+@context {page} .
+*/ -}}
+{{- $sub := false }}
+{{- $cat := .FirstSection }}
+{{- $cs := .CurrentSection }}
+{{- if and $cat (not $cs.IsHome) (not ($cs.Eq $cat)) }}
+  {{- range (slice $cs) | append $cs.Ancestors }}
+    {{- if and .IsSection .Parent (.Parent.Eq $cat) }}{{ $sub = . }}{{ end }}
+  {{- end }}
+{{- end }}
+{{- return $sub }}

@@ -1,4 +1,4 @@
-// contact-sheet: language menu, gallery tag filters, photo viewer navigation.
+// contact-sheet: dropdown menus, folded navigation, gallery subcategory switching, photo viewer navigation.
 
 const GALLERY_KEY = 'contact-sheet:gallery';
 
@@ -16,107 +16,153 @@ const store = {
 // A plain left click, as opposed to one that opens a new tab or window.
 const plainClick = (e) => e.button === 0 && !e.metaKey && !e.ctrlKey && !e.shiftKey && !e.altKey;
 
-// ---------------------------------------------------------------- language menu
-// <details> disclosure: close on outside click or Escape, keep it on screen.
-const langMenus = Array.from(document.querySelectorAll('[data-lang]'));
-for (const menu of langMenus) {
+// ---------------------------------------------------------------- dropdown menus
+// Category and language menus are <details> disclosures: one open at a time,
+// closed by an outside click or Escape, and flipped to stay on screen. With a
+// mouse they also open on hover, and a click then keeps them open instead of
+// toggling them shut. In a category menu the name is a link to the category.
+// Inside the folded navigation (see below) all menus stay open as rows of a
+// table, so none of this applies there.
+const menus = Array.from(document.querySelectorAll('[data-menu]'));
+const inFold = (menu) => !!menu.closest('.is-folded');
+// An open menu is a full-width band under the header (see .menu-list in main.css).
+// Line its row of items up under the menu's name: category items start at the
+// name's left edge, language items end at its right edge; never past either side.
+const placeMenu = (menu) => {
+  const list = menu.querySelector('.menu-list');
+  const header = menu.closest('.site-header');
+  const items = list ? list.querySelectorAll('li') : [];
+  if (!header || !items.length) return;
+  list.style.setProperty('--x', '0px');
+  const h = header.getBoundingClientRect();
+  const s = menu.querySelector('summary').getBoundingClientRect();
+  const row = items[items.length - 1].getBoundingClientRect().right - items[0].getBoundingClientRect().left;
+  const x = menu.classList.contains('lang') ? s.right - h.left - row : s.left - h.left;
+  list.style.setProperty('--x', Math.max(0, Math.min(x, h.width - row)) + 'px');
+};
+for (const menu of menus) {
   menu.addEventListener('toggle', () => {
-    if (!menu.open) return;
-    for (const other of langMenus) if (other !== menu) other.open = false;
-    menu.classList.remove('is-left');
-    const list = menu.querySelector('.lang-menu');
-    if (list && list.getBoundingClientRect().left < 8) menu.classList.add('is-left');
+    if (!menu.open || inFold(menu)) return;
+    for (const other of menus) if (other !== menu && !inFold(other)) other.open = false;
+    placeMenu(menu);
   });
 }
+window.addEventListener('resize', () => { for (const menu of menus) if (menu.open) placeMenu(menu); });
 document.addEventListener('click', (e) => {
-  for (const menu of langMenus) {
-    if (menu.open && !menu.contains(e.target)) menu.open = false;
+  for (const menu of menus) {
+    if (menu.open && !inFold(menu) && !menu.contains(e.target)) menu.open = false;
   }
 });
 document.addEventListener('keydown', (e) => {
   if (e.key !== 'Escape') return;
-  for (const menu of langMenus) {
-    if (menu.open) {
+  for (const menu of menus) {
+    if (menu.open && !inFold(menu)) {
       menu.open = false;
       menu.querySelector('summary')?.focus();
       e.preventDefault(); // don't also close the photo viewer
     }
   }
 });
+if (window.matchMedia('(hover: hover) and (pointer: fine)').matches) {
+  for (const menu of menus) {
+    let timer;
+    menu.addEventListener('mouseenter', () => { if (!inFold(menu)) { clearTimeout(timer); menu.open = true; } });
+    menu.addEventListener('mouseleave', () => { if (!inFold(menu)) timer = setTimeout(() => { menu.open = false; }, 200); });
+    menu.querySelector('summary')?.addEventListener('click', (e) => {
+      if (e.detail === 0 || e.target.closest('a')) return; // keyboard toggles; the name is a link
+      if (menu.open) e.preventDefault();
+    });
+  }
+}
+
+// ---------------------------------------------------------------- folded navigation
+// When the header is crowded, the menu button opens the navigation as a panel
+// under the header (see .is-folded in main.css), with every menu open as a row:
+// the name on the left, its items to the right. It closes on a link, an outside
+// click or Escape.
+const navToggle = document.querySelector('[data-nav-toggle]');
+if (navToggle) {
+  const header = navToggle.closest('.site-header');
+  const isOpen = () => header.classList.contains('is-open');
+  const setOpen = (open) => {
+    header.classList.toggle('is-open', open);
+    navToggle.setAttribute('aria-expanded', String(open));
+    for (const menu of menus) if (header.contains(menu)) menu.open = open;
+  };
+  navToggle.addEventListener('click', () => setOpen(!isOpen()));
+  header.querySelector('.nav')?.addEventListener('click', (e) => {
+    if (e.target.closest('a')) setOpen(false);
+  });
+  document.addEventListener('click', (e) => {
+    if (isOpen() && !header.contains(e.target)) setOpen(false);
+  });
+  document.addEventListener('keydown', (e) => {
+    if (e.key !== 'Escape' || !isOpen() || e.defaultPrevented) return;
+    setOpen(false);
+    navToggle.focus();
+    e.preventDefault();
+  });
+}
 
 // ---------------------------------------------------------------- gallery
-// Tag filters, mirrored in ?tag= so links and the back button keep them. The
-// active tag is also added to each photo link, so the photo page can step
-// through just the filtered photos. The gallery keeps the height of the
-// unfiltered view, so the page doesn't jump when switching tags.
+// On a category or subcategory page, the category's navigation dropdown (its name
+// and its items) links to the category and subcategory pages, which render the
+// same gallery with that subcategory selected. Here those links switch in place
+// instead, and the address bar follows, so reloading or going back shows the same
+// view. The active subcategory is also added to each photo link (?sub=), so the
+// photo page can step through just those photos. Each view takes its own height.
 const group = document.querySelector('[data-filter-group]');
 const gallery = document.querySelector('[data-gallery]');
 if (gallery) {
-  const chips = group ? Array.from(group.querySelectorAll('[data-filter]')) : [];
+  // The dropdown's name and items, plus the category crumb in the header.
+  const links = group ? [...group.querySelectorAll('[data-filter]'), ...document.querySelectorAll('.crumbs [data-filter]')] : [];
   const items = Array.from(gallery.querySelectorAll('.item'));
   const frames = Array.from(gallery.querySelectorAll('.frame'));
-  for (const f of frames) f.dataset.base = f.getAttribute('href');
-  const known = new Set(chips.map((c) => c.dataset.filter));
-  let current = 'all';
+  for (const f of frames) f.dataset.base = f.getAttribute('href').split('?')[0];
+  const known = new Set(links.map((l) => l.dataset.filter));
+  const subCrumb = document.querySelector('[data-sub-title]');
+  const subName = document.querySelector('[data-sub-name]');
+  let current = gallery.dataset.active || 'all';
 
   // Remember which gallery the visitor came from, so the photo page's close
-  // button can return here through history (keeping scroll position and filter).
+  // button can return here through history (keeping scroll position and selection).
   gallery.addEventListener('click', (e) => {
     if (e.target.closest('.frame')) store.set(GALLERY_KEY, normPath(location.pathname));
   });
 
   const show = (filter) => {
-    for (const item of items) {
-      const tags = (item.dataset.tags || '').split(' ');
-      item.hidden = filter !== 'all' && !tags.includes(filter);
-    }
-  };
-
-  // Reserve the height of the tallest layout among "All" and every tag. A filter
-  // with fewer photos can be taller than "All" (fewer, larger images per row), so
-  // reserving only the unfiltered height isn't enough. Measured synchronously,
-  // so no intermediate layout is ever painted.
-  const lockHeight = () => {
-    gallery.style.minHeight = '';
-    let height = 0;
-    for (const filter of ['all', ...known]) {
-      show(filter);
-      height = Math.max(height, gallery.getBoundingClientRect().height);
-    }
-    show(current);
-    gallery.style.minHeight = Math.ceil(height) + 'px';
+    for (const item of items) item.hidden = filter !== 'all' && item.dataset.sub !== filter;
   };
 
   const apply = (filter, updateUrl) => {
+    if (!links.length) return; // no subcategories (or a tag page): links stay as rendered
     current = known.has(filter) ? filter : 'all';
-    for (const chip of chips) {
-      chip.setAttribute('aria-pressed', String(chip.dataset.filter === current));
+    let active = null;
+    for (const link of links) {
+      if (link.dataset.filter === current) { link.setAttribute('aria-current', 'page'); active = active || link; }
+      else link.removeAttribute('aria-current');
     }
     show(current);
-    const qs = current === 'all' ? '' : '?tag=' + encodeURIComponent(current);
+    const qs = current === 'all' ? '' : '?sub=' + encodeURIComponent(current);
     for (const f of frames) f.setAttribute('href', f.dataset.base + qs);
-    if (updateUrl) {
-      const url = new URL(window.location.href);
-      if (current === 'all') url.searchParams.delete('tag');
-      else url.searchParams.set('tag', current);
-      history.replaceState(history.state, '', url);
+    if (subCrumb) subCrumb.hidden = current === 'all' || !active;
+    if (subName && active && current !== 'all') subName.textContent = active.dataset.name;
+    if (updateUrl && active) {
+      history.replaceState(history.state, '', active.href);
+      if (active.dataset.title) document.title = active.dataset.title;
     }
   };
 
-  for (const chip of chips) {
-    chip.addEventListener('click', () => apply(chip.dataset.filter, true));
+  for (const link of links) {
+    link.addEventListener('click', (e) => {
+      if (!plainClick(e)) return; // let modified clicks open the subcategory page
+      e.preventDefault();
+      const menu = link.closest('details');
+      if (menu) menu.open = false;
+      apply(link.dataset.filter, true);
+    });
   }
-  apply(new URLSearchParams(window.location.search).get('tag') || 'all', false);
-
-  if (chips.length) {
-    lockHeight();
-    let lastWidth = gallery.clientWidth;
-    new ResizeObserver(() => {
-      if (gallery.clientWidth === lastWidth) return;
-      lastWidth = gallery.clientWidth;
-      lockHeight();
-    }).observe(gallery);
-  }
+  apply(current, false);
 }
 
 // ---------------------------------------------------------------- photo viewer
@@ -129,27 +175,45 @@ if (viewer) {
   const closers = Array.from(document.querySelectorAll('[data-close]'));
   const counter = document.querySelector('[data-counter]');
 
-  // 1. Filter-aware sequence: with ?tag=, step through only the photos with that tag.
-  let seq = [];
-  try { seq = JSON.parse(viewer.querySelector('[data-sequence]')?.textContent || '[]'); } catch { seq = []; }
-  let tag = new URLSearchParams(location.search).get('tag');
-  let list = seq;
-  if (tag) {
-    const filtered = seq.filter((p) => (p.t || []).includes(tag));
-    if (filtered.some((p) => normPath(p.u) === here)) list = filtered;
-    else tag = null; // this photo isn't in that filter: fall back to the whole category
+  // 1. Step through the gallery the visitor came from: the whole category by
+  //    default, one subcategory with ?sub=, or a tag page (across categories)
+  //    with ?tag=. Close then returns to that gallery.
+  let data = {};
+  try { data = JSON.parse(viewer.querySelector('[data-sequence]')?.textContent || '{}'); } catch { data = {}; }
+  const params = new URLSearchParams(location.search);
+  const has = (urls) => urls.some((u) => normPath(u) === here);
+  let list = (data.seq || []).map((p) => p.u);
+  let qs = '';
+  let from = null; // { u: gallery URL, n: its name } when not the whole category
+  const tag = params.get('tag');
+  const sub = params.get('sub');
+  if (tag && data.tags?.[tag] && has(data.tags[tag].p)) {
+    list = data.tags[tag].p;
+    qs = '?tag=' + encodeURIComponent(tag);
+    from = data.tags[tag];
+  } else if (sub && data.subs?.[sub]) {
+    const urls = (data.seq || []).filter((p) => p.s === sub).map((p) => p.u);
+    if (has(urls)) {
+      list = urls;
+      qs = '?sub=' + encodeURIComponent(sub);
+      from = data.subs[sub];
+    }
   }
-  const qs = tag ? '?tag=' + encodeURIComponent(tag) : '';
-  const i = list.findIndex((p) => normPath(p.u) === here);
+  if (from) {
+    for (const c of closers) c.href = from.u;
+    const label = document.querySelector('[data-back-label]');
+    if (label) label.textContent = from.n;
+  }
+  const galleryPath = normPath(from ? from.u : section);
+  const i = list.findIndex((u) => normPath(u) === here);
   const neighbours = [];
   if (i >= 0) {
     const n = list.length;
-    const prevUrl = list[(i - 1 + n) % n].u + qs;
-    const nextUrl = list[(i + 1) % n].u + qs;
+    const prevUrl = list[(i - 1 + n) % n] + qs;
+    const nextUrl = list[(i + 1) % n] + qs;
     if (prev) { prev.href = prevUrl; prev.hidden = n < 2; }
     if (next) { next.href = nextUrl; next.hidden = n < 2; }
     if (counter) counter.textContent = `${i + 1} / ${n}`;
-    for (const c of closers) c.href = c.getAttribute('href').split('?')[0] + qs;
     if (n > 1) neighbours.push(nextUrl, prevUrl);
   }
 
@@ -164,13 +228,16 @@ if (viewer) {
     });
   }
 
-  // Close: when we got here from this category's gallery, go back in history so
-  // the browser restores its scroll position and filter. Otherwise follow the link.
+  // Close: when we got here from that gallery (directly, or by stepping from a
+  // photo opened there), go back in history so the browser restores its scroll
+  // position and selection. Otherwise follow the link.
   const cameFromGallery = () => {
-    if (history.length < 2 || store.get(GALLERY_KEY) !== section) return false;
+    if (history.length < 2 || store.get(GALLERY_KEY) !== galleryPath) return false;
     try {
       const ref = new URL(document.referrer);
-      return ref.origin === location.origin && normPath(ref.pathname).startsWith(section);
+      if (ref.origin !== location.origin) return false;
+      const path = normPath(ref.pathname);
+      return path === galleryPath || list.some((u) => normPath(u) === path);
     } catch { return false; }
   };
   for (const c of closers) {

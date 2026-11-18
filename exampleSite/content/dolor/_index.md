@@ -1,4 +1,4 @@
 ---
 title: Dolor
-tint: '#c3b3b7'
+tint: '#835757'
 ---

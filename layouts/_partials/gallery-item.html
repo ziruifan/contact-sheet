@@ -1,0 +1,32 @@
+{{- /*
+One photo in a justified gallery (category, subcategory and tag pages).
+
+@context {dict}
+  page    the photo page
+  index   position in the gallery (the first few load eagerly)
+  query   optional query string for the link, e.g. "?sub=eiusmod"
+  sub     optional subcategory key, for the client-side filter
+  hidden  optional; render hidden (filtered out)
+*/ -}}
+{{- $p := .page }}
+{{- $img := partial "photo-resource.html" $p }}
+{{- $ratio := 1.0 }}
+{{- with $img }}
+  {{- $v := partial "img-variant.html" (dict "img" . "width" 800) }}
+  {{- if and $v.Width $v.Height }}{{ $ratio = div (float $v.Width) $v.Height }}{{ end }}
+{{- end }}
+<figure class="item" style="--r: {{ printf "%.4f" $ratio }}"{{ with .sub }} data-sub="{{ . }}"{{ end }}{{ if .hidden }} hidden{{ end }}>
+  <a class="frame" href="{{ $p.RelPermalink }}{{ .query }}"{{ with $p.Params.tint | default $p.FirstSection.Params.tint }} style="--tint: {{ . | safeCSS }}"{{ end }}>
+    {{- with $img }}
+      {{- partial "img.html" (dict
+        "img" .
+        "widths" (slice 480 800 1200 1600)
+        "sizes" (printf "(max-width: 600px) 100vw, %dpx" (math.Round (mul $ratio 420) | int))
+        "alt" $p.Title
+        "eager" (lt $.index 4)
+      ) }}
+    {{- else }}
+      <span class="placeholder">{{ $p.Title }}</span>
+    {{- end }}
+  </a>
+</figure>

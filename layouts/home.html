@@ -1,18 +1,11 @@
 {{ define "main" }}
 {{- $cats := partialCached "categories.html" . site.Language.Lang }}
-{{- $n := len $cats }}
-{{- /* Layout (from 860px up; phones always stack tiles in one column):
-       columns = n when n ≤ 2, 2 when n is 3–4, 3 when n ≥ 5.
-       Rows that can't be full go on top, one tile short each, so the bigger
-       tiles lead:  3 → 1+2,  4 → 2×2,  5 → 2+3,  6 → 3+3,  7 → 2+2+3,
-       8 → 2+3+3,  9 → 3×3.  Each tile gets --k, the number of tiles in its row. */}}
-{{- $cols := cond (le $n 2) (math.Max $n 1 | int) (cond (le $n 4) 2 3) }}
-{{- $rows := math.Ceil (div (float $n) $cols) | int }}
-{{- $shortRows := sub (mul $rows $cols) $n }}
-{{- $shortTiles := mul $shortRows (sub $cols 1) }}
-<main class="tiles" style="--rows: {{ $rows }}">
+{{- /* Rows and tile widths from _partials/tile-rows.html (from 860px up; phones
+       stack the tiles in one column). Each tile gets --k, the tiles in its row. */}}
+{{- $grid := partial "tile-rows.html" (len $cats) }}
+<main class="tiles" style="--rows: {{ $grid.rows }}">
   {{- range $i, $s := $cats }}
-    {{- $k := cond (lt $i $shortTiles) (sub $cols 1) $cols }}
+    {{- $k := index $grid.k $i }}
     {{- $img := partial "photo-resource.html" $s }}
     <a class="tile" href="{{ $s.RelPermalink }}" style="--k: {{ $k }}{{ with $s.Params.tint }}; --tint: {{ . | safeCSS }}{{ end }}">
       {{- with $img }}

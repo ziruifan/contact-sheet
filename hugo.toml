@@ -1,7 +1,7 @@
 # contact-sheet theme defaults. Site config (../../hugo.toml) overrides these.
 
-# Taxonomies are unused; disable them in the site config with
-# disableKinds = ['taxonomy', 'term'] (theme configs can't set it).
+# Tag pages need the tags taxonomy in the site config, which also drops Hugo's
+# unused default `categories` taxonomy:  [taxonomies]  tag = 'tags'
 
 [params]
   # Shown top-left in the header and in the footer copyright line.

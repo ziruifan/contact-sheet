@@ -1,19 +1,7 @@
 ---
 title: 关于
 layout: about
-journey:
-  - year: 2012
-    text: 遐迩一体
-  - year: 2015
-    text: 率宾归王
-  - year: 2017
-    text: 鸣凤在竹
-  - year: 2020
-    text: 白驹食场
-  - year: 2023
-    text: 化被草木
-  - year: 现在
-    text: 赖及万方
+photos: [ridges-rose.jpg, sea-mist.jpg]
 links:
   - name: lorem@example.com
     url: mailto:lorem@example.com

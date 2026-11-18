@@ -6,14 +6,14 @@ detail view (prev/next, counter, caption). Anything else renders as plain text.
 
 {{ define "header" }}
   {{- if partial "is-photo.html" . }}
-    {{- $s := .CurrentSection }}
-    {{- $pages := $s.RegularPages }}
+    {{- $s := .FirstSection }}
+    {{- $pages := $s.RegularPagesRecursive }}
     {{- $idx := 0 }}
     {{- range $i, $p := $pages }}{{ if $p.Eq $ }}{{ $idx = $i }}{{ end }}{{ end }}
     <header class="site-header photo-header">
       <a class="back" href="{{ $s.RelPermalink }}" data-close>
         <svg aria-hidden="true" width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M10 3 5 8l5 5"/></svg>
-        <span>{{ $s.LinkTitle }}</span>
+        <span data-back-label>{{ $s.LinkTitle }}</span>
       </a>
       <span class="counter" data-counter>{{ add $idx 1 }} / {{ len $pages }}</span>
       <div class="photo-controls">
@@ -30,22 +30,33 @@ detail view (prev/next, counter, caption). Anything else renders as plain text.
 
 {{ define "main" }}
   {{- if partial "is-photo.html" . }}
-    {{- $s := .CurrentSection }}
-    {{- $pages := $s.RegularPages }}
+    {{- $s := .FirstSection }}
+    {{- $pages := $s.RegularPagesRecursive }}
     {{- $n := len $pages }}
     {{- $idx := 0 }}
     {{- range $i, $p := $pages }}{{ if $p.Eq $ }}{{ $idx = $i }}{{ end }}{{ end }}
     {{- $prev := index $pages (mod (add $idx (sub $n 1)) $n) }}
     {{- $next := index $pages (mod (add $idx 1) $n) }}
-    {{- /* The category's photos and their tag slugs, in gallery order. main.js uses it
-           to step through only the photos of an active ?tag= filter. */}}
+    {{- /* What main.js needs to step through the gallery the visitor came from:
+             seq   the category's photos in gallery order, with their subcategory (?sub=)
+             subs  each subcategory's page and name
+             tags  for each of this photo's tags (?tag=): its page, name and photos */}}
     {{- $seq := slice }}
     {{- range $pages }}
-      {{- $slugs := slice }}{{ range partial "tags.html" . }}{{ $slugs = $slugs | append (anchorize .) }}{{ end }}
-      {{- $seq = $seq | append (dict "u" .RelPermalink "t" $slugs) }}
+      {{- $sub := "" }}{{ with partial "subcategory.html" . }}{{ $sub = path.Base .Path }}{{ end }}
+      {{- $seq = $seq | append (dict "u" .RelPermalink "s" $sub) }}
+    {{- end }}
+    {{- $subs := dict }}
+    {{- range $s.Sections }}
+      {{- $subs = merge $subs (dict (path.Base .Path) (dict "u" .RelPermalink "n" .LinkTitle)) }}
+    {{- end }}
+    {{- $tags := dict }}
+    {{- range .GetTerms "tags" }}
+      {{- $urls := slice }}{{ range .Pages }}{{ $urls = $urls | append .RelPermalink }}{{ end }}
+      {{- $tags = merge $tags (dict (path.Base .Path) (dict "u" .RelPermalink "n" .LinkTitle "p" $urls)) }}
     {{- end }}
     <main class="viewer" data-viewer data-section="{{ $s.RelPermalink }}">
-      <script type="application/json" data-sequence>{{ $seq | jsonify | safeJS }}</script>
+      <script type="application/json" data-sequence>{{ dict "seq" $seq "subs" $subs "tags" $tags | jsonify | safeJS }}</script>
       <div class="stage">
         {{- if gt $n 1 }}
         <a class="step" href="{{ $prev.RelPermalink }}" aria-label="{{ T "previous" }}" rel="prev" data-prev>
@@ -70,24 +81,31 @@ detail view (prev/next, counter, caption). Anything else renders as plain text.
       {{- $hasDesc := .Content | plainify | strings.TrimSpace }}
       <div class="meta{{ if not $hasDesc }} meta--no-desc{{ end }}">
         <div class="meta-title">
+          <div class="meta-path">
+            <a href="{{ $s.RelPermalink }}">{{ $s.LinkTitle }}</a>
+            {{- with partial "subcategory.html" . }}<span class="meta-sep" aria-hidden="true">·</span><a href="{{ .RelPermalink }}">{{ .LinkTitle }}</a>{{ end }}
+          </div>
           <h1>{{ .Title }}</h1>
           {{- with partial "year.html" . }}<span class="meta-year">{{ . }}</span>{{ end }}
+          {{- with .GetTerms "tags" }}
+          <div class="meta-tags">
+            {{- range . }}
+            <a class="chip" href="{{ .RelPermalink }}">{{ .LinkTitle }}</a>
+            {{- end }}
+          </div>
+          {{- end }}
         </div>
         {{- if $hasDesc }}
         <div class="meta-desc prose">{{ .Content }}</div>
         {{- end }}
-        {{- with partial "tags.html" . }}
-        <div class="meta-tags">
-          {{- range . }}
-          <a class="chip" href="{{ $s.RelPermalink }}?tag={{ . | anchorize }}">{{ . }}</a>
-          {{- end }}
-        </div>
+        {{- /* `detail` in front matter: plain text, line breaks kept. */}}
+        {{- with .Params.detail | strings.TrimSpace }}
+        <div class="meta-detail">{{ . }}</div>
         {{- end }}
       </div>
     </main>
   {{- else }}
     <main class="article">
-      <h1 class="display">{{ .Title }}</h1>
       <div class="prose">{{ .Content }}</div>
     </main>
   {{- end }}

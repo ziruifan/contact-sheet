@@ -14,7 +14,7 @@ Returns the main image resource for a page, or nothing.
   {{- with .Resources.GetMatch "cover.*" }}
     {{- $img = . }}
   {{- else }}
-    {{- $pages := .RegularPages }}
+    {{- $pages := .RegularPagesRecursive }}
     {{- with where $pages "Params.featured" true }}{{ $pages = . }}{{ end }}
     {{- range $pages }}
       {{- if not $img }}

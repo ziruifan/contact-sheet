@@ -1,19 +1,7 @@
 ---
 title: About
 layout: about
-journey:
-  - year: 2012
-    text: Deserunt mollit anim
-  - year: 2015
-    text: Sunt in culpa
-  - year: 2017
-    text: Tempor incididunt
-  - year: 2020
-    text: Culpa qui
-  - year: 2023
-    text: Sed do eiusmod
-  - year: Now
-    text: Dolor in
+photos: [ridges-rose.jpg, sea-mist.jpg]
 links:
   - name: lorem@example.com
     url: mailto:lorem@example.com

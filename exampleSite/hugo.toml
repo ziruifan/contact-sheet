@@ -1,5 +1,5 @@
 # Example site for the contact-sheet theme: Lorem Ipsum text (千字文 on the Chinese
-# pages) and a set of abstract photos.
+# pages) and a set of generated photos.
 # Preview it from the theme folder with:
 #   hugo server --source exampleSite
 # Or from inside exampleSite/ with: hugo server
@@ -8,10 +8,13 @@ baseURL = 'https://example.org/'
 title = 'Lorem Ipsum'
 theme = 'contact-sheet'
 themesDir = '../..'
-disableKinds = ['taxonomy', 'term']
 
 defaultContentLanguage = 'en'
 defaultContentLanguageInSubdir = false
+
+# Tags get a page each (/tags/<tag>/); the unused default `categories` taxonomy is off.
+[taxonomies]
+  tag = 'tags'
 
 [params]
   # Categories shown on the homepage and in the navigation, in this order.
@@ -26,16 +29,20 @@ defaultContentLanguageInSubdir = false
   description = 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.'
 
 [languages]
+  # languageName is shown in the language menu; params.languageShort in the bar.
   [languages.en]
-    languageName = 'EN'
+    languageName = 'English'
     languageCode = 'en'
     weight = 1
+    [languages.en.params]
+      languageShort = 'EN'
   [languages.zh]
     languageName = '中文'
     languageCode = 'zh-Hans'
     weight = 2
     title = '天地玄黄'
     [languages.zh.params]
+      languageShort = '中文'
       author = '天地玄黄'
       description = '天地玄黄，宇宙洪荒。'
 

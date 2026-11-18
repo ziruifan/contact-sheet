@@ -1,59 +1,48 @@
 {{- /*
 About page. Set `layout: about` in front matter.
 
-  portrait: portrait.jpg   # optional; defaults to the first image in the folder
-  journey:                 # timeline, oldest first
-    - year: 2012
-      text: Where it started
-    - year: Now            # the last entry is highlighted (or mark one with current: true)
-      text: What I am doing now
-  links:                   # the first link is highlighted
+  photos: [lake.jpg, hills.jpg]   # optional; images in this folder, in this order.
+                                  # Without it, every image in the folder, by file name.
+  links:                          # the first link is highlighted
     - name: me@example.com
       url: mailto:me@example.com
 
-The page body is the short bio.
+The page body is the bio. Text and links on the left, the photos on the right
+(stacked when there are several, each at its own aspect ratio).
 */ -}}
 {{ define "main" }}
+{{- $photos := slice }}
+{{- with .Params.photos }}
+  {{- range (cond (reflect.IsSlice .) . (slice .)) }}
+    {{- with $.Resources.GetMatch . }}{{ $photos = $photos | append . }}{{ else }}{{ warnf "contact-sheet: about photo %q not found in %s" . $.File.Dir }}{{ end }}
+  {{- end }}
+{{- else }}
+  {{- $photos = (.Resources.ByType "image").ByName }}
+{{- end }}
 <main class="about">
-  {{- $img := false }}
-  {{- with .Params.portrait }}{{ $img = $.Resources.GetMatch . }}{{ end }}
-  {{- if not $img }}{{ $img = partial "photo-resource.html" . }}{{ end }}
-  {{- with $img }}
-  <div class="portrait">
-    {{- partial "img.html" (dict "img" . "widths" (slice 480 720 960 1440) "sizes" "(max-width: 900px) 100vw, 480px" "alt" $.Title "eager" true) }}
+  <div class="about-body">
+    {{- with .Content }}<div class="bio">{{ . }}</div>{{ end }}
+    {{- with .Params.links }}
+    <nav class="links" aria-label="{{ T "links" }}">
+      {{- range . }}
+      <a href="{{ .url }}"{{ if strings.HasPrefix .url "http" }} rel="me noopener"{{ end }}>{{ .name }}</a>
+      {{- end }}
+    </nav>
+    {{- end }}
+  </div>
+  {{- with $photos }}
+  {{- /* One photo: shown whole at its own shape. Several: the homepage's tile grid
+         (_partials/tile-rows.html), cropped to fill equal-height rows. */}}
+  {{- $grid := partial "tile-rows.html" (len .) }}
+  {{- $multi := gt (len .) 1 }}
+  <div class="about-photos{{ if $multi }} is-grid{{ end }}" style="--rows: {{ $grid.rows }}">
+    {{- range $i, $img := . }}
+    {{- $k := index $grid.k $i }}
+    <figure class="about-photo" style="--k: {{ $k }}">
+      {{- partial "img.html" (dict "img" $img "widths" (slice 800 1200 1600 2400) "sizes" (printf "(max-width: 860px) 100vw, %dvw" (div 70 $k)) "alt" (cond (eq $i 0) $.Title "") "eager" (lt $i 2)) }}
+    </figure>
+    {{- end }}
   </div>
   {{- end }}
-  <div class="about-body">
-    <h1 class="display">{{ .Title }}</h1>
-    {{- with .Content }}<div class="bio">{{ . }}</div>{{ end }}
-
-    {{- with .Params.journey }}
-    {{- $last := sub (len .) 1 }}
-    {{- $marked := where . "current" true }}
-    <section class="block" aria-labelledby="journey-heading">
-      <h2 id="journey-heading">{{ T "journey" }}</h2>
-      <ol class="timeline">
-        {{- range $i, $e := . }}
-        {{- $current := cond (gt (len $marked) 0) (eq $e.current true) (eq $i $last) }}
-        <li{{ if $current }} class="is-current"{{ end }}>
-          <span class="when">{{ $e.year }}</span>
-          <span class="what">{{ $e.text | markdownify }}</span>
-        </li>
-        {{- end }}
-      </ol>
-    </section>
-    {{- end }}
-
-    {{- with .Params.links }}
-    <section class="block" aria-labelledby="links-heading">
-      <h2 id="links-heading">{{ T "links" }}</h2>
-      <div class="links">
-        {{- range . }}
-        <a href="{{ .url }}"{{ if strings.HasPrefix .url "http" }} rel="me noopener"{{ end }}>{{ .name }}</a>
-        {{- end }}
-      </div>
-    </section>
-    {{- end }}
-  </div>
 </main>
 {{ end }}

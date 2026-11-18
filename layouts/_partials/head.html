@@ -1,6 +1,8 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>{{ if .IsHome }}{{ site.Title }}{{ else }}{{ printf "%s · %s" .Title site.Title }}{{ end }}</title>
+{{- $title := .Title }}
+{{- if eq .Kind "taxonomy" }}{{ $title = T "tags" }}{{ end }}{{/* "Tags" in the page's language */}}
+<title>{{ if .IsHome }}{{ site.Title }}{{ else }}{{ printf "%s · %s" $title site.Title }}{{ end }}</title>
 {{- $desc := "" }}
 {{- with .Description }}{{ $desc = . }}{{ else }}{{ with .Summary }}{{ $desc = . | plainify | strings.TrimSpace }}{{ else }}{{ $desc = site.Params.description }}{{ end }}{{ end }}
 {{- with $desc }}
@@ -9,7 +11,7 @@
 <meta name="color-scheme" content="dark light">
 <meta name="theme-color" content="#0e0e0e" media="(prefers-color-scheme: dark)">
 <meta name="theme-color" content="#fafafa" media="(prefers-color-scheme: light)">
-<meta property="og:title" content="{{ .Title | default site.Title }}">
+<meta property="og:title" content="{{ $title | default site.Title }}">
 <meta property="og:type" content="{{ if .IsPage }}article{{ else }}website{{ end }}">
 <meta property="og:url" content="{{ .Permalink }}">
 <link rel="canonical" href="{{ .Permalink }}">

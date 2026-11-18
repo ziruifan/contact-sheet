@@ -1,4 +1,9 @@
 ---
 title: Amet
-tint: '#d5a4b9'
+tint: '#1c2235'
+cascade:
+  params:
+    detail: |
+      Excepteur sint
+      Occaecat cupidatat
 ---

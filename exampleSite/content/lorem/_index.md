@@ -1,4 +1,4 @@
 ---
 title: Lorem
-tint: '#d0bbb6'
+tint: '#68525a'
 ---
