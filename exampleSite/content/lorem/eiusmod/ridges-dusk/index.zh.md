@@ -13,4 +13,4 @@ detail: |
 
 ![群山后的光](detail.jpg "金生丽水，玉出昆冈。")
 
-剑号巨阙，珠称夜光。
+剑号巨阙，珠称夜光。[阅读全文](/notes/dolorem-ipsum/ridges)

@@ -5,7 +5,8 @@ Returns the main image resource for a page, or nothing.
               bundle that the description doesn't use (see content-images.html).
   Section:    `cover.*` in the section folder, else the image of a photo marked
               `featured: true`, else the image of the first photo.
-  Other page: same as a photo page (e.g. the portrait on the About page).
+  Other page: same as a photo page (the About page uses this for its social preview
+              image; its own photo list is built in layouts/about.html).
 
 @context {page} .
 @example {{ with partial "photo-resource.html" . }}…{{ end }}

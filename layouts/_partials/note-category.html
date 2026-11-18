@@ -1,0 +1,12 @@
+{{- /*
+Returns a note's category: the folder it sits in under content/notes/
+(content/notes/<category>/<note>/), whose _index.md holds the category's title
+in each language; false for a note directly in content/notes/.
+
+@context {page} .  (the note)
+*/ -}}
+{{- $cat := false }}
+{{- with .Parent }}
+  {{- if and (not .IsHome) (not (.Eq $.FirstSection)) }}{{ $cat = . }}{{ end }}
+{{- end }}
+{{- return $cat }}

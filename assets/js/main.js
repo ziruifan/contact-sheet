@@ -89,6 +89,27 @@ if (window.matchMedia('(hover: hover) and (pointer: fine)').matches) {
   }
 }
 
+// ---------------------------------------------------------------- back links
+// A note's back and close links return to the page the reader came from on this
+// site (keeping its scroll position); opened from elsewhere, they follow their
+// href. Escape closes the note, as on a photo page.
+const backLinks = Array.from(document.querySelectorAll('[data-back]'));
+for (const link of backLinks) {
+  link.addEventListener('click', (e) => {
+    if (!plainClick(e) || history.length < 2) return;
+    try { if (new URL(document.referrer).origin !== location.origin) return; } catch { return; }
+    e.preventDefault();
+    history.back();
+  });
+}
+if (backLinks.length) {
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && !e.defaultPrevented && !e.altKey && !e.ctrlKey && !e.metaKey && !e.shiftKey) {
+      backLinks[backLinks.length - 1].click();
+    }
+  });
+}
+
 // ---------------------------------------------------------------- folded navigation
 // When the header is crowded, the menu button opens the navigation as a panel
 // under the header (see .is-folded in main.css), with every menu open as a row:

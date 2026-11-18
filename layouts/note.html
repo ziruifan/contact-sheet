@@ -1,0 +1,92 @@
+{{- /*
+A note: a long text page that photo descriptions link to, kept out of the
+navigation, the homepage and the galleries. Laid out like a photo page without
+the photo: the same minimal header (back, language) and the caption's
+three columns, with the text in the middle (description) column. Notes live in
+content/notes/, optionally grouped in category folders
+(content/notes/<category>/<note>/, the category's title in its _index.md). The
+_index.md of content/notes/ gives the notes this layout and keeps the folders
+themselves from becoming pages or appearing in any list:
+
+  ---
+  title: Notes
+  build:
+    render: never
+    list: never
+  cascade:
+    - target:
+        kind: page
+      layout: note
+    - target:
+        kind: section
+      build:
+        render: never
+        list: never
+  ---
+
+Link to a note from a description with a normal Markdown link, e.g.
+[Read the full story](/notes/ridges); Hugo resolves it to the note in the page's
+language. The note lists the photos whose descriptions link to it on the right; with
+exactly one, the back link names it. The category folder's title is shown above the
+title, where a photo shows its category, and `tags` below the year, as on photo pages
+(tag pages list tagged notes under their photos).
+*/ -}}
+{{ define "bodyClass" }}photo note{{ end }}
+
+{{ define "header" }}
+  {{- $refs := partial "note-refs.html" . }}
+  {{- $back := site.Home }}{{ if eq (len $refs) 1 }}{{ $back = index $refs 0 }}{{ end }}
+  <header class="site-header photo-header">
+    <a class="back" href="{{ $back.RelPermalink }}" data-back>
+      <svg aria-hidden="true" width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M10 3 5 8l5 5"/></svg>
+      <span>{{ if eq (len $refs) 1 }}{{ $back.LinkTitle }}{{ else }}{{ T "back" }}{{ end }}</span>
+    </a>
+    <span></span>
+    <div class="photo-controls">
+      {{- partial "lang-switch.html" . }}
+    </div>
+  </header>
+{{ end }}
+
+{{ define "main" }}
+{{- $refs := partial "note-refs.html" . }}
+<main class="note">
+  <div class="meta">
+    <div class="meta-title">
+      {{- with partial "note-category.html" . }}<div class="meta-path"><span>{{ .LinkTitle }}</span></div>{{ end }}
+      <h1>{{ .Title }}</h1>
+      {{- with partial "year.html" . }}<span class="meta-year">{{ . }}</span>{{ end }}
+      {{- with .GetTerms "tags" }}
+      <div class="meta-tags">
+        {{- range . }}
+        <a class="chip" href="{{ .RelPermalink }}">{{ .LinkTitle }}</a>
+        {{- end }}
+      </div>
+      {{- end }}
+    </div>
+    <div class="meta-desc prose">{{ .Content }}</div>
+    {{- with $refs }}
+    <aside class="note-refs" aria-label="{{ T "links" }}">
+      <ul>
+        {{- range . }}
+        {{- $p := . }}
+        <li>
+          <a href="{{ .RelPermalink }}">
+            {{- with partial "photo-resource.html" . }}
+              {{- partial "img.html" (dict "img" . "widths" (slice 240 480) "sizes" "96px" "alt" "" "class" "note-ref-img") }}
+            {{- end }}
+            <span class="note-ref-text">
+              <span class="note-ref-title">{{ .LinkTitle }}</span>
+              {{- with .FirstSection }}{{ if not .IsHome }}<span class="note-ref-where">{{ .LinkTitle }}{{ with partial "subcategory.html" $p }} · {{ .LinkTitle }}{{ end }}</span>{{ end }}{{ end }}
+            </span>
+          </a>
+        </li>
+        {{- end }}
+      </ul>
+    </aside>
+    {{- end }}
+  </div>
+</main>
+{{ end }}
+
+{{ define "footer" }}{{ end }}

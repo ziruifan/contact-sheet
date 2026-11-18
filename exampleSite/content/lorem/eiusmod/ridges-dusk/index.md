@@ -13,4 +13,4 @@ Do eiusmod tempor incididunt ut labore et dolore magna aliqua. Reprehenderit in 
 
 ![The light behind the ridges](detail.jpg "Ut enim ad minim veniam, quis nostrud exercitation.")
 
-Ullamco laboris nisi ut aliquip ex ea commodo consequat.
+Ullamco laboris nisi ut aliquip ex ea commodo consequat. [Read the full story](/notes/dolorem-ipsum/ridges)

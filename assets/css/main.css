@@ -16,7 +16,6 @@
   --hover-bg: rgba(255, 255, 255, 0.06);
   --portrait: #2a2f2c;      /* placeholder behind the About photos */
   --tint: #1d2a35;          /* placeholder colour behind images while they load */
-  --scrim: rgba(14, 14, 14, 0.78);
   /* Text drawn on top of photos stays light in both palettes. */
   --on-image: #f2f2f2;
   --on-image-2: #d0d0d0;
@@ -297,6 +296,12 @@ img { display: block; max-width: 100%; }
 .prose > :last-child { margin-bottom: 0; }
 .prose a { color: var(--fg); text-decoration: underline; text-decoration-color: var(--outline); text-underline-offset: 3px; }
 .prose a:hover { text-decoration-color: currentColor; }
+.prose p, .prose ul, .prose ol, .prose blockquote { margin: 0 0 1em; }
+.prose h2, .prose h3 { margin: 1.8em 0 0.6em; color: var(--fg); font-weight: 500; line-height: 1.3; letter-spacing: -0.01em; }
+.prose h2 { font-size: 1.375rem; }
+.prose h3 { font-size: 1.125rem; }
+.prose ul, .prose ol { padding-left: 1.4em; }
+.prose blockquote { padding-left: 1em; border-left: 2px solid var(--line); color: var(--muted); }
 
 /* Markdown images (layouts/_markup/render-image.html): full column width at most,
    their own shape, with an optional caption below. */
@@ -447,14 +452,6 @@ p > .md-figure:only-child { margin: 0; }   /* an image on its own line: the para
 .back { display: flex; align-items: center; gap: 8px; padding: 14px 0; }
 .counter { color: var(--dim); font-variant-numeric: tabular-nums; }
 .photo-controls { display: flex; align-items: center; gap: 12px; justify-self: end; }
-.close {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 44px;
-  height: 44px;
-  color: var(--muted);
-}
 
 /* The stage (arrows + image) takes the height left after the header and the
    caption; the image is fitted inside it. */
@@ -610,6 +607,38 @@ p > .md-figure:only-child { margin: 0; }   /* an image on its own line: the para
 
 .article { max-width: 720px; padding-top: 40px; }
 .article .prose { margin-top: 32px; font-size: 1.0625rem; }
+
+/* Notes (layouts/note.html): a photo page without the photo. The same header, and
+   the caption's three columns: (category,) title and year on the left, the text in
+   the middle, the photos that link to the note on the right. On wide screens the
+   side columns stay in view while the text scrolls; on phones the links follow the
+   text. */
+.note .meta { margin-top: 16px; }
+.note .meta-desc { font-size: 1rem; }
+.note-refs { grid-area: info; justify-self: end; width: min(100%, 260px); }
+.note-refs ul { display: flex; flex-direction: column; gap: 12px; margin: 0; padding: 0; list-style: none; }
+.note-refs a { display: flex; align-items: center; gap: 14px; color: var(--fg-2); }
+.note-refs a:hover { color: var(--hover); }
+.note-ref-img { flex: none; width: 96px; height: 64px; object-fit: cover; background: var(--tint); }
+.note-ref-text { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.note-ref-title { font-size: 0.9375rem; }
+.note-ref-where { font-size: 0.8125rem; color: var(--dim); }
+
+/* Tag pages: notes with the tag, listed under the photos. */
+.tag-notes { margin-top: 32px; padding-top: 16px; border-top: 1px solid var(--line); }
+.gallery + .tag-notes { margin-top: 40px; }
+.tag-notes ul { display: flex; flex-direction: column; gap: 4px; margin: 0; padding: 0; list-style: none; }
+.tag-notes a { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 12px; padding: 6px 0; color: var(--fg-2); }
+.tag-notes a:hover { color: var(--hover); }
+.tag-note-title { font-size: 1rem; }
+.tag-note-category { font-size: 0.8125rem; color: var(--dim); }
+@media (min-width: 1001px) {
+  .note .meta-title, .note-refs { position: sticky; top: 24px; }
+}
+@media (max-width: 600px) {
+  .note .meta { grid-template-areas: "title" "desc" "info"; }
+  .note-refs { justify-self: stretch; width: auto; margin-top: 16px; padding-top: 16px; border-top: 1px solid var(--line); }
+}
 
 /* ---------- Motion ----------
    - Photos fade in from their tint as they load (main.js marks the ones still

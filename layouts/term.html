@@ -1,11 +1,27 @@
-{{- /* A tag page (/tags/<tag>/): every photo with that tag, from all categories. */ -}}
+{{- /* A tag page (/tags/<tag>/): every photo with that tag, from all categories, then
+the notes with that tag. */ -}}
 {{ define "main" }}
 {{- $key := path.Base .Path }}
+{{- $photos := where .Pages "Layout" "ne" "note" }}
+{{- $notes := where .Pages "Layout" "note" }}
 {{- with .Content }}<div class="section-intro prose">{{ . }}</div>{{ end }}
-<main class="gallery" data-gallery>
-  {{- range $i, $p := .Pages }}
-    {{- partial "gallery-item.html" (dict "page" $p "index" $i "query" (printf "?tag=%s" $key)) }}
+<main class="term">
+  {{- with $photos }}
+  <div class="gallery" data-gallery>
+    {{- range $i, $p := . }}
+      {{- partial "gallery-item.html" (dict "page" $p "index" $i "query" (printf "?tag=%s" $key)) }}
+    {{- end }}
+    <div class="gallery-spacer" aria-hidden="true"></div>
+  </div>
   {{- end }}
-  <div class="gallery-spacer" aria-hidden="true"></div>
+  {{- with $notes }}
+  <section class="tag-notes" aria-label="{{ T "notes" }}">
+    <ul>
+      {{- range . }}
+      <li><a href="{{ .RelPermalink }}"><span class="tag-note-title">{{ .LinkTitle }}</span>{{ with partial "note-category.html" . }}<span class="tag-note-category">{{ .LinkTitle }}</span>{{ end }}</a></li>
+      {{- end }}
+    </ul>
+  </section>
+  {{- end }}
 </main>
 {{ end }}

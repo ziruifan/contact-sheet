@@ -6,8 +6,9 @@ and English/Chinese out of the box. Requires Hugo ≥ 0.153.
 - **Home**: exactly one screen tall, filled by one big tile per category. Up to 2 categories share one row, 3–4 use two columns, 5 or more use three; rows that can't be full go on top, so the bigger tiles lead (3 → 1 + 2, 5 → 2 + 3, 7 → 2 + 2 + 3, 8 → 2 + 3 + 3). Phones stack the tiles.
 - **Category**: a justified photo grid. Rows fill the width and every image keeps its own aspect ratio. Hovering a photo zooms it slightly. Optional subcategories are listed in a dropdown under the category's name in the navigation; each has its own page, and switching between them on the category page is instant.
 - **Tags**: every tag has a page with its photos from all categories, and `/tags/` lists them all.
-- **Photo**: one image per page with prev/next (←/→ keys, swipe), a counter, Esc to close, and a caption: category · subcategory, title, year, tags, an optional description, and an optional detail text. Prev/next and the counter follow the gallery the photo was opened from: the category, one subcategory, or a tag page. Closing returns to that gallery at the same scroll position. The neighbouring photos are preloaded, so stepping is instant.
+- **Photo**: one image per page with prev/next (←/→ keys, swipe), a counter, a back link (or Esc), and a caption: category · subcategory, title, year, tags, an optional description, and an optional detail text. Prev/next and the counter follow the gallery the photo was opened from: the category, one subcategory, or a tag page. Going back returns to that gallery at the same scroll position. The neighbouring photos are preloaded, so stepping is instant.
 - **About**: bio and links on the left, photos filling the right: one photo is shown whole; several use the same tile grid as the homepage.
+- **Notes**: long texts that photo descriptions link to, for explanations too long for a description. They stay out of the navigation, the homepage and the galleries, and list the photos that link to them.
 - **Breadcrumbs**: pages have no big heading; the header shows where you are after the site name instead ("Lorem Ipsum · Lorem · Eiusmod", "Lorem Ipsum · Tags · Consectetur").
 - **Page height**: every page is at least one screen tall, with the footer at the bottom; the photo viewer fits the image into the screen.
 - **Motion**: photos fade in from their placeholder colour as they load; opening a photo grows its thumbnail into the full image (and closing shrinks it back), stepping between photos morphs one into the next, switching subcategory slides the photos into place, and menus slide in. Uses View Transitions where the browser supports them, and is turned off for visitors who prefer reduced motion.
@@ -93,8 +94,9 @@ category folder (they appear only on the category page itself, not on any subcat
 ## Tags
 
 Tags are shared across categories. Each tag gets a page (`/tags/<tag>/`) with all its
-photos, and the tags on a photo page link there. `/tags/` lists every tag with its
-photo count; it isn't linked from the navigation, so add it to a menu if you want
+photos, and the tags on a photo page link there. Notes can have tags too; a tag page
+lists its notes under the photos. `/tags/` lists every tag with the
+number of photos and notes using it; it isn't linked from the navigation, so add it to a menu if you want
 it there. Translate tags in `index.zh.md`; the Chinese site gets its own tag pages.
 
 ## Content layout
@@ -106,6 +108,12 @@ content/
     index.md                # layout: about; body = bio; links; photos: [a.jpg, b.jpg] (optional order)
     ridges-rose.jpg         # one or more photos (without `photos`, all images by file name)
     sea-mist.jpg
+  notes/                    # long texts linked from descriptions (see "Notes")
+    _index.md               # hides the folders; gives the notes the note layout
+    dolorem-ipsum/          # optional category: _index.md (+ .zh.md) with its title
+      ridges/
+        index.md            # title, date, tags; body = the text
+        ridges-left.jpg     # images used in the text
   lorem/                    # one folder per category, listed in params.categories
     _index.md               # title, tint (placeholder colour, optional)
     _index.zh.md            # Chinese title
@@ -187,6 +195,73 @@ cascade:
 
 In the example site, Lorem and Dolor photos have their own `detail`; Ipsum and Amet use
 the `cascade` above.
+
+### Notes
+
+For explanations too long for a description, write a note and link to it. Notes live
+in `content/notes/`, one folder per note (so a note can have its own images). Group
+notes into categories with folders, as with photos: a category folder's `_index.md`
+holds its title (and `_index.zh.md` the translation), shown above the title of each
+note in it. Notes can also sit directly in `content/notes/`, without a category.
+
+```
+content/notes/
+  _index.md                 # see below
+  dolorem-ipsum/            # a category
+    _index.md               # title: Dolorem ipsum
+    _index.zh.md            # title: 寒来暑往
+    ridges/                 # a note
+      index.md
+      index.zh.md
+      ridges-left.jpg
+```
+
+`content/notes/_index.md` gives every note the note layout and keeps the folders
+themselves out of the navigation, the homepage and every list (none of them becomes a
+page):
+
+```yaml
+---
+title: Notes
+build:
+  render: never        # no page for content/notes/
+  list: never
+cascade:
+  - target:
+      kind: page
+    layout: note       # every note
+  - target:
+      kind: section
+    build:             # no page for the category folders
+      render: never
+      list: never
+---
+```
+
+Link to a note from any description with an ordinary Markdown link to its folder;
+Hugo resolves it to the note in the page's language:
+
+```markdown
+[Read the full story](/notes/dolorem-ipsum/ridges)
+```
+
+A note is laid out like a photo page without the photo: the same header (back link
+and language; Esc goes back too), then the caption's three columns with the category,
+title, year and tags on the left, the text in the middle (headings, lists, quotes and
+images as in descriptions) and, on the right, the photos whose text links to it. The
+back link names that photo when there is exactly one. The example site's first Lorem
+photo links to a note.
+
+Note front matter: `title`, `date` (its year is shown) and optional `tags`, shown
+below the year as on photo pages:
+
+```yaml
+---
+title: Sed ut perspiciatis
+date: 2025-01-01
+tags: [Consectetur, Magna]
+---
+```
 
 ### Homepage tile image
 

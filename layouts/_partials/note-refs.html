@@ -1,0 +1,12 @@
+{{- /*
+Returns the pages whose text links to a note (their raw Markdown contains the
+note's path, e.g. "notes/ridges"), for its "Links" list and back link.
+
+@context {page} .  (the note)
+*/ -}}
+{{- $key := strings.TrimPrefix "/" .Path }}
+{{- $refs := slice }}
+{{- range site.RegularPages }}
+  {{- if and (not (.Eq $)) (strings.Contains .RawContent $key) }}{{ $refs = $refs | append . }}{{ end }}
+{{- end }}
+{{- return $refs }}

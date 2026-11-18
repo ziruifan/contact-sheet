@@ -18,9 +18,6 @@ detail view (prev/next, counter, caption). Anything else renders as plain text.
       <span class="counter" data-counter>{{ add $idx 1 }} / {{ len $pages }}</span>
       <div class="photo-controls">
         {{- partial "lang-switch.html" . }}
-        <a class="close" href="{{ $s.RelPermalink }}" aria-label="{{ T "close" }}" data-close>
-          <svg aria-hidden="true" width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M3 3l12 12M15 3 3 15"/></svg>
-        </a>
       </div>
     </header>
   {{- else }}
@@ -52,7 +49,7 @@ detail view (prev/next, counter, caption). Anything else renders as plain text.
     {{- end }}
     {{- $tags := dict }}
     {{- range .GetTerms "tags" }}
-      {{- $urls := slice }}{{ range .Pages }}{{ $urls = $urls | append .RelPermalink }}{{ end }}
+      {{- $urls := slice }}{{ range where .Pages "Layout" "ne" "note" }}{{ $urls = $urls | append .RelPermalink }}{{ end }}{{/* photos only, no notes */}}
       {{- $tags = merge $tags (dict (path.Base .Path) (dict "u" .RelPermalink "n" .LinkTitle "p" $urls)) }}
     {{- end }}
     <main class="viewer" data-viewer data-section="{{ $s.RelPermalink }}">
@@ -95,11 +92,11 @@ detail view (prev/next, counter, caption). Anything else renders as plain text.
         {{- end }}
       </div>
       {{- $hasDesc := ne (.Content | strings.TrimSpace) "" }}{{/* text and/or images */}}
-      <div class="meta{{ if not $hasDesc }} meta--no-desc{{ end }}">
+      <div class="meta">
         <div class="meta-title">
           <div class="meta-path">
             <a href="{{ $s.RelPermalink }}">{{ $s.LinkTitle }}</a>
-            {{- with partial "subcategory.html" . }}<span class="meta-sep" aria-hidden="true">·</span><a href="{{ .RelPermalink }}">{{ .LinkTitle }}</a>{{ end }}
+            {{- with partial "subcategory.html" . }}<span aria-hidden="true">·</span><a href="{{ .RelPermalink }}">{{ .LinkTitle }}</a>{{ end }}
           </div>
           <h1>{{ .Title }}</h1>
           {{- with partial "year.html" . }}<span class="meta-year">{{ . }}</span>{{ end }}
