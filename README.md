@@ -10,6 +10,7 @@ and English/Chinese out of the box. Requires Hugo ≥ 0.153.
 - **About**: bio and links on the left, photos filling the right: one photo is shown whole; several use the same tile grid as the homepage.
 - **Breadcrumbs**: pages have no big heading; the header shows where you are after the site name instead ("Lorem Ipsum · Lorem · Eiusmod", "Lorem Ipsum · Tags · Consectetur").
 - **Page height**: every page is at least one screen tall, with the footer at the bottom; the photo viewer fits the image into the screen.
+- **Motion**: photos fade in from their placeholder colour as they load; opening a photo grows its thumbnail into the full image (and closing shrinks it back), stepping between photos morphs one into the next, switching subcategory slides the photos into place, and menus slide in. Uses View Transitions where the browser supports them, and is turned off for visitors who prefer reduced motion.
 - **Light and dark**: picked automatically from the visitor's browser/OS setting (`prefers-color-scheme`). Colours are CSS variables at the top of `assets/css/main.css`.
 - **Multilingual**: the language menu works like the category dropdowns (hover or click, works without JavaScript) and hides itself when the site has only one language.
 - **Menus**: an open dropdown extends the top bar downwards across the full width, with its items in a row under the name.

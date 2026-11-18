@@ -190,6 +190,8 @@ img { display: block; max-width: 100%; }
 }
 .menu-list a:hover { color: var(--hover); }
 .menu-list a[aria-current] { color: var(--fg); }
+@keyframes cs-drop { from { opacity: 0; transform: translateY(-6px); } }
+.menu[open] > .menu-list { animation: cs-drop 0.16s ease-out; }   /* the band slides in */
 
 /* Folded navigation: when the name/breadcrumbs and the nav don't fit on one row
    (checked by the script after the header, at any width), a menu button next to
@@ -237,6 +239,8 @@ img { display: block; max-width: 100%; }
   font-size: 0.9375rem;
 }
 .site-header.is-folded.is-open > .nav { --col: 7em; }   /* width of the names column */
+.site-header.is-folded.is-open > .nav { animation: cs-drop 0.18s ease-out; }   /* the panel slides in */
+.site-header.is-folded .menu[open] > .menu-list { animation: none; }   /* rows of the panel, not bands */
 .site-header.is-folded.is-open > .nav > a { padding: 11px 0; }
 .site-header.is-folded.is-open .menu { font-size: inherit; }
 .site-header.is-folded.is-open .menu summary {
@@ -333,7 +337,7 @@ img { display: block; max-width: 100%; }
   height: 100%;
   object-fit: cover;
   z-index: -2;
-  transition: transform 0.6s cubic-bezier(0.2, 0.7, 0.2, 1);
+  transition: transform 0.6s cubic-bezier(0.2, 0.7, 0.2, 1), opacity 0.35s ease;
 }
 .tile:hover .tile-img, .tile:focus-visible .tile-img { transform: scale(1.025); }
 .tile-label {
@@ -413,7 +417,7 @@ img { display: block; max-width: 100%; }
   width: 100%;
   height: 100%;
   object-fit: cover;
-  transition: transform 0.6s cubic-bezier(0.2, 0.7, 0.2, 1);   /* same zoom as the homepage tiles */
+  transition: transform 0.6s cubic-bezier(0.2, 0.7, 0.2, 1), opacity 0.35s ease;   /* same zoom as the homepage tiles */
 }
 .frame:hover img, .frame:focus-visible img { transform: scale(1.025); }
 .placeholder { padding: 16px; font-size: 0.75rem; letter-spacing: 0.06em; color: var(--on-image-2); text-align: center; }
@@ -554,7 +558,7 @@ img { display: block; max-width: 100%; }
 }
 .about-photos { display: flex; flex-wrap: wrap; gap: var(--gap); min-width: 0; }
 .about-photo { flex: 1 1 100%; min-width: 0; margin: 0; background: var(--portrait); }
-.about-photo img { display: block; width: 100%; height: auto; }
+.about-photo img { display: block; width: 100%; height: auto; transition: opacity 0.35s ease; }
 /* Several photos: the home tile grid, its rows sharing the page height. */
 .about-photos.is-grid { align-self: stretch; align-content: stretch; }
 .about-photos.is-grid .about-photo {
@@ -589,22 +593,34 @@ img { display: block; max-width: 100%; }
 .article { max-width: 720px; padding-top: 40px; }
 .article .prose { margin-top: 32px; font-size: 1.0625rem; }
 
-/* ---------- Photo-to-photo crossfade ----------
-   Cross-document View Transitions: stepping between photo pages fades the photo
-   and its caption (200ms) while the header, arrows and counter stay still.
-   Browsers without support simply switch pages, as before. */
+/* ---------- Motion ----------
+   - Photos fade in from their tint as they load (main.js marks the ones still
+     loading with .is-loading).
+   - Cross-document View Transitions: opening a photo grows its gallery thumbnail
+     into the full image, closing shrinks it back, and stepping between photos
+     morphs one into the next, all as "cs-photo" (main.js names the thumbnail).
+     The caption fades; the header, arrows and counter stay still.
+   - Switching subcategory in place (main.js) slides the photos to their new spots.
+   - Dropdowns and the folded panel slide in (cs-drop, with the menus above).
+   Browsers without View Transitions simply switch, as before. Everything is off
+   for visitors who prefer reduced motion. */
+img.is-loading { opacity: 0; }
+
 @view-transition { navigation: auto; }
 ::view-transition-old(root),
 ::view-transition-new(root) { animation: none; }   /* the rest of the page swaps instantly */
-.photo .shot { view-transition-name: cs-shot; }
+.photo .shot img { view-transition-name: cs-photo; }
 .photo .meta { view-transition-name: cs-meta; }
-::view-transition-group(cs-shot),
+::view-transition-group(cs-photo) {
+  animation-duration: 320ms;
+  animation-timing-function: cubic-bezier(0.2, 0.7, 0.2, 1);
+}
 ::view-transition-group(cs-meta) {
   animation-duration: 200ms;
   animation-timing-function: ease;
 }
 
 @media (prefers-reduced-motion: reduce) {
-  *, *::before, *::after { transition: none !important; }
+  *, *::before, *::after { transition: none !important; animation: none !important; }
   @view-transition { navigation: none; }
 }

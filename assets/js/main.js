@@ -16,6 +16,20 @@ const store = {
 // A plain left click, as opposed to one that opens a new tab or window.
 const plainClick = (e) => e.button === 0 && !e.metaKey && !e.ctrlKey && !e.shiftKey && !e.altKey;
 
+const reducedMotion = () => window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+// ---------------------------------------------------------------- photo fade-in
+// Home tiles, gallery and About photos that haven't loaded yet fade in from their
+// tint once they arrive (img.is-loading in main.css). Already-loaded images and
+// visitors without JavaScript see them straight away.
+for (const img of document.querySelectorAll('.tile-img, .frame img, .about-photo img')) {
+  if (img.complete) continue;
+  img.classList.add('is-loading');
+  const done = () => img.classList.remove('is-loading');
+  img.addEventListener('load', done, { once: true });
+  img.addEventListener('error', done, { once: true });
+}
+
 // ---------------------------------------------------------------- dropdown menus
 // Category and language menus are <details> disclosures: one open at a time,
 // closed by an outside click or Escape, and flipped to stay on screen. With a
@@ -111,6 +125,7 @@ if (navToggle) {
 // instead, and the address bar follows, so reloading or going back shows the same
 // view. The active subcategory is also added to each photo link (?sub=), so the
 // photo page can step through just those photos. Each view takes its own height.
+// With View Transitions, the photos slide to their new spots while switching.
 const group = document.querySelector('[data-filter-group]');
 const gallery = document.querySelector('[data-gallery]');
 if (gallery) {
@@ -153,16 +168,54 @@ if (gallery) {
     }
   };
 
+  // Each photo gets its own transition name for the switch, so the photos that stay
+  // move and resize into place while the others fade out or in.
+  // If the browser hasn't run the update within 250ms (no frames being drawn, e.g.
+  // a background tab), skip the animation and switch directly.
+  const switchTo = (filter) => {
+    if (!document.startViewTransition || reducedMotion() || filter === current) return apply(filter, true);
+    let done = false;
+    const update = () => { if (!done) { done = true; apply(filter, true); } };
+    items.forEach((item, i) => { item.style.viewTransitionName = 'cs-item-' + i; });
+    const transition = document.startViewTransition(update);
+    const clear = () => { for (const item of items) item.style.viewTransitionName = ''; };
+    transition.finished.finally(clear);
+    setTimeout(() => { if (!done) { transition.skipTransition(); update(); clear(); } }, 250);
+  };
+
   for (const link of links) {
     link.addEventListener('click', (e) => {
       if (!plainClick(e)) return; // let modified clicks open the subcategory page
       e.preventDefault();
       const menu = link.closest('details');
       if (menu) menu.open = false;
-      apply(link.dataset.filter, true);
+      switchTo(link.dataset.filter);
     });
   }
   apply(current, false);
+
+  // Gallery <-> photo morph (cross-document View Transitions): the photo page's
+  // image is always "cs-photo"; here the frame of the photo being opened, or of the
+  // one just closed, takes that name for the length of the transition. The frame,
+  // not the image inside it, so its tint travels with the photo instead of showing
+  // as an empty coloured slot while the photo flies in (the frame has the photo's
+  // own aspect ratio, so the morph is the same).
+  const thumbFor = (url) => {
+    const path = normPath(new URL(url, location.href).pathname);
+    return frames.find((f) => !f.closest('.item').hidden && normPath(new URL(f.href).pathname) === path) || null;
+  };
+  const morph = (el, transition) => {
+    if (!el || !transition) return;
+    el.style.viewTransitionName = 'cs-photo';
+    transition.finished.finally(() => { el.style.viewTransitionName = ''; });
+  };
+  window.addEventListener('pageswap', (e) => {
+    if (e.viewTransition && e.activation && e.activation.entry) morph(thumbFor(e.activation.entry.url), e.viewTransition);
+  });
+  window.addEventListener('pagereveal', (e) => {
+    const from = window.navigation && window.navigation.activation && window.navigation.activation.from;
+    if (e.viewTransition && from) morph(thumbFor(from.url), e.viewTransition);
+  });
 }
 
 // ---------------------------------------------------------------- photo viewer
