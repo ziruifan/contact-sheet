@@ -166,13 +166,13 @@ Text after it.
 They are resized to responsive WebP like every other image and load lazily. An image
 used in the description (in any language) is never picked as the photo itself, so no
 `image:` line is needed. On wide screens the photo keeps its size and the page scrolls
-to the rest of a long description. The same works in the About bio and plain pages.
-The example site's first Lorem photo has one.
+to the rest of a long description. The same works in the About bio, plain pages and notes;
+the example site's note has one.
 
 ### Detail
 
 `detail` in a photo's front matter is plain text shown on the right of the caption
-(between the title block and the description on phones), with its line breaks kept. Use it for anything:
+(below the description on phones), with its line breaks kept. Use it for anything:
 place, camera, print size, materials.
 
 ```yaml

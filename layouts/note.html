@@ -71,14 +71,12 @@ title, where a photo shows its category, and `tags` below the year, as on photo 
         {{- range . }}
         {{- $p := . }}
         <li>
-          <a href="{{ .RelPermalink }}">
+          <a href="{{ .RelPermalink }}" title="{{ .LinkTitle }}">
             {{- with partial "photo-resource.html" . }}
-              {{- partial "img.html" (dict "img" . "widths" (slice 240 480) "sizes" "96px" "alt" "" "class" "note-ref-img") }}
+              {{- partial "img.html" (dict "img" . "widths" (slice 240 480) "sizes" "96px" "alt" $p.LinkTitle "class" "note-ref-img") }}
+            {{- else }}
+              <span class="note-ref-text">{{ .LinkTitle }}</span>
             {{- end }}
-            <span class="note-ref-text">
-              <span class="note-ref-title">{{ .LinkTitle }}</span>
-              {{- with .FirstSection }}{{ if not .IsHome }}<span class="note-ref-where">{{ .LinkTitle }}{{ with partial "subcategory.html" $p }} · {{ .LinkTitle }}{{ end }}</span>{{ end }}{{ end }}
-            </span>
           </a>
         </li>
         {{- end }}
@@ -89,4 +87,6 @@ title, where a photo shows its category, and `tags` below the year, as on photo 
 </main>
 {{ end }}
 
-{{ define "footer" }}{{ end }}
+{{- /* No footer, as on photo pages. The {{ "" }} is needed: Go templates ignore a
+       definition that is only whitespace or comments, which would keep the footer. */}}
+{{ define "footer" }}{{ "" }}{{ end }}
