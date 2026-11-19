@@ -6,7 +6,7 @@ and English/Chinese out of the box. Requires Hugo ≥ 0.153.
 - **Home**: exactly one screen tall, filled by one big tile per category. Up to 2 categories share one row, 3–4 use two columns, 5 or more use three; rows that can't be full go on top, so the bigger tiles lead (3 → 1 + 2, 5 → 2 + 3, 7 → 2 + 2 + 3, 8 → 2 + 3 + 3). Phones stack the tiles.
 - **Category**: a justified photo grid. Rows fill the width and every image keeps its own aspect ratio. Hovering a photo zooms it slightly. Optional subcategories are listed in a dropdown under the category's name in the navigation; each has its own page, and switching between them on the category page is instant.
 - **Tags**: every tag has a page with its photos from all categories, and `/tags/` lists them all.
-- **Photo**: one image per page with prev/next (←/→ keys, swipe), a counter, a back link (or Esc), and a caption: category · subcategory, title, year, tags, an optional description, and an optional detail text. Prev/next and the counter follow the gallery the photo was opened from: the category, one subcategory, or a tag page. Going back returns to that gallery at the same scroll position. The neighbouring photos are preloaded, so stepping is instant.
+- **Photo**: one image per page with prev/next (←/→ keys, swipe), a counter, a back link (or Esc), and a caption: category · subcategory, title, year, tags, an optional description, and an optional detail text. Prev/next and the counter follow the gallery the photo was opened from: the category, one subcategory, or a tag page. Going back returns to that gallery at the same scroll position. The neighbouring photos are preloaded, so stepping is instant. The caption has three columns on wide screens (title block, description, details), two on medium screens (title block with the details under it, beside the description) and stacks on phones (details under the title, a thin line, then the description).
 - **About**: bio and links on the left, photos filling the right: one photo is shown whole; several use the same tile grid as the homepage.
 - **Notes**: long texts that photo descriptions link to, for explanations too long for a description. They stay out of the navigation, the homepage and the galleries, and list the photos that link to them.
 - **Breadcrumbs**: pages have no big heading; the header shows where you are after the site name instead ("Lorem Ipsum · Lorem · Eiusmod", "Lorem Ipsum · Tags · Consectetur").
@@ -172,7 +172,7 @@ the example site's note has one.
 ### Detail
 
 `detail` in a photo's front matter is plain text shown on the right of the caption
-(below the description on phones), with its line breaks kept. Use it for anything:
+(under the title on phones), with its line breaks kept. Use it for anything:
 place, camera, print size, materials.
 
 ```yaml

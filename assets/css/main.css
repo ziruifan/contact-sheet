@@ -84,7 +84,6 @@ img { display: block; max-width: 100%; }
    photo viewer grow their content into that space instead of computing heights
    from the viewport. */
 .wrap {
-  box-sizing: border-box;
   min-height: 100svh;
   display: flex;
   flex-direction: column;
@@ -238,9 +237,9 @@ img { display: block; max-width: 100%; }
   padding: 0 var(--gutter) 16px;
   background: var(--bg);
   font-size: 0.95rem;
+  --col: 7em;   /* width of the names column */
+  animation: cs-drop 0.18s ease-out;   /* the panel slides in */
 }
-.site-header.is-folded.is-open > .nav { --col: 7em; }   /* width of the names column */
-.site-header.is-folded.is-open > .nav { animation: cs-drop 0.18s ease-out; }   /* the panel slides in */
 .site-header.is-folded .menu[open] > .menu-list { animation: none; }   /* rows of the panel, not bands */
 .site-header.is-folded.is-open > .nav > a { padding: 11px 0; }
 .site-header.is-folded.is-open .menu { font-size: inherit; }
@@ -259,7 +258,6 @@ img { display: block; max-width: 100%; }
 .site-header.is-folded.is-open .menu-toggle { display: none; }
 .site-header.is-folded.is-open .menu-list {
   position: static;
-  flex-wrap: wrap;
   gap: 0 20px;
   margin-left: var(--col);
   padding: 0;
@@ -309,7 +307,7 @@ img { display: block; max-width: 100%; }
 /* Markdown images (layouts/_markup/render-image.html): full column width at most,
    their own shape, with an optional caption below. */
 .md-figure { display: block; margin: 1.25em 0; }
-.md-figure img { display: block; max-width: 100%; height: auto; background: var(--tint); }
+.md-figure img { height: auto; background: var(--tint); }
 .md-caption { display: block; margin-top: 8px; font-size: 0.8rem; line-height: 1.5; color: var(--dim); }
 p > .md-figure:only-child { margin: 0; }   /* an image on its own line: the paragraph spaces it */
 
@@ -380,16 +378,11 @@ p > .md-figure:only-child { margin: 0; }   /* an image on its own line: the para
   min-height: 30px;
   padding: 0 11px;
   border: 1px solid var(--outline);
-  border-radius: 0;
-  background: transparent;
   color: var(--fg-2);
-  font: inherit;
   font-size: 0.75rem;
-  cursor: pointer;
 }
 .chip:hover { color: var(--hover); border-color: var(--fg-2); }
-.chip-count { margin-left: 8px; color: var(--dim); }   /* photos per tag on the tag index */
-
+.chip-count { margin-left: 8px; color: var(--dim); }   /* photos and notes per tag on the tag index */
 
 .tag-index { padding-bottom: 32px; }
 
@@ -449,7 +442,7 @@ p > .md-figure:only-child { margin: 0; }   /* an image on its own line: the para
 .photo-header .back { justify-self: start; }
 .back { display: flex; align-items: center; gap: 8px; padding: 14px 0; }
 .counter { color: var(--dim); font-variant-numeric: tabular-nums; }
-.photo-controls { display: flex; align-items: center; gap: 12px; justify-self: end; }
+.photo-controls { display: flex; align-items: center; justify-self: end; }
 
 /* The stage (arrows + image) takes the height left after the header and the
    caption; the image is fitted inside it. */
@@ -496,7 +489,7 @@ p > .md-figure:only-child { margin: 0; }   /* an image on its own line: the para
 
 .meta {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(0, 640px) minmax(0, 1fr);
+  grid-template-columns: minmax(220px, 1fr) minmax(0, 640px) minmax(220px, 1fr);   /* side columns never squeezed below 220px */
   grid-template-areas: "title desc info";
   column-gap: 40px;
   row-gap: 16px;
@@ -511,7 +504,7 @@ p > .md-figure:only-child { margin: 0; }   /* an image on its own line: the para
 .meta-path a, .note .meta-path span { color: var(--fg-3); }   /* a note's category: same colour, no link */
 .meta-path a:hover { color: var(--hover); }
 .meta-year { font-size: 0.8rem; color: var(--dim); }
-.meta-desc { grid-area: desc; max-width: 640px; font-size: 1rem; }
+.meta-desc { grid-area: desc; font-size: 1rem; }
 .meta-tags { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 6px; }
 /* Detail: the front matter `detail` text, line breaks kept. */
 .meta-detail {
@@ -526,15 +519,26 @@ p > .md-figure:only-child { margin: 0; }   /* an image on its own line: the para
 
 /* Wide screens: the side columns (title block; detail, or a note's linking photos)
    stay in view while a long description scrolls past. */
-@media (min-width: 1001px) {
+@media (min-width: 1201px) {
   .meta-title, .meta-detail, .note-refs { position: sticky; top: 24px; }
+  /* The description box shrinks to its text and is centred in the middle column, so
+     a one-line description sits centred under the photo; longer text still fills
+     the full 640px column. */
+  .meta-desc { justify-self: center; }
 }
-@media (max-width: 1000px) {
+/* Below 1200px the three columns would get cramped: two columns instead, the title
+   block with the detail (or a note's linking photos) under it on the left, the
+   description on the right. The second row takes any extra height, so the detail
+   stays right under the title however long the description is. */
+@media (max-width: 1200px) {
   .meta {
-    grid-template-columns: minmax(0, 1fr) auto;
-    grid-template-areas: "title info" "desc desc";
+    grid-template-columns: minmax(220px, 1fr) minmax(0, 2fr);
+    grid-template-rows: auto 1fr;
+    grid-template-areas: "title desc" "info desc";
     padding: 0;
   }
+  .meta-detail, .meta .note-refs { justify-self: start; text-align: left; }
+  .meta .note-refs ul { justify-content: flex-start; }
 }
 @media (max-width: 600px) {
   /* Photo first, then a row with the arrows under it (prev left, next right). */
@@ -543,15 +547,18 @@ p > .md-figure:only-child { margin: 0; }   /* an image on its own line: the para
   .shot img { position: static; margin: 0 auto; width: min(100%, calc(75svh * var(--r, 1.5)), var(--w, 100000px)); max-height: 75svh; }
   .step[rel="prev"] { margin-left: -12px; }   /* line the arrow icons up with the photo's edges */
   .step[rel="next"] { margin-right: -12px; }
-  /* Caption stacked: title block, description, then the detail text. */
+  /* Caption stacked: title block, the detail text (or a note's linking photos), then
+     the description below a hairline. */
   .meta {
     grid-template-columns: minmax(0, 1fr);
-    grid-template-areas: "title" "desc" "info";
+    grid-template-rows: none;
+    grid-template-areas: "title" "info" "desc";
     row-gap: 14px;
     margin-top: 8px;
   }
-  /* The detail text below the description, under a hairline (like the photos on notes). */
-  .meta-detail { justify-self: stretch; text-align: left; margin-top: 16px; padding-top: 16px; border-top: 1px solid var(--line); }
+  .meta-detail, .meta .note-refs { justify-self: stretch; width: auto; text-align: left; }
+  /* The hairline separates it from a description; without one there is no line. */
+  .meta:has(.meta-desc) :is(.meta-detail, .note-refs) { padding-bottom: 16px; border-bottom: 1px solid var(--line); }
 }
 
 /* ---------- About ---------- */
@@ -577,7 +584,7 @@ p > .md-figure:only-child { margin: 0; }   /* an image on its own line: the para
 }
 .about-photos { display: flex; flex-wrap: wrap; gap: var(--gap); min-width: 0; }
 .about-photo { flex: 1 1 100%; min-width: 0; margin: 0; background: var(--portrait); }
-.about-photo img { display: block; width: 100%; height: auto; transition: opacity 0.35s ease; }
+.about-photo img { width: 100%; height: auto; transition: opacity 0.35s ease; }
 /* Several photos: the home tile grid, its rows sharing the page height. */
 .about-photos.is-grid { align-self: stretch; align-content: stretch; }
 .about-photos.is-grid .about-photo {
@@ -614,9 +621,8 @@ p > .md-figure:only-child { margin: 0; }   /* an image on its own line: the para
 .article .prose { margin-top: 32px; font-size: 1.05rem; }
 
 /* Notes (layouts/note.html): a photo page without the photo. The same header, and
-   the caption's three columns: (category,) title and year on the left, the text in
-   the middle, the photos that link to the note on the right; on phones the links
-   follow the text. */
+   the caption's columns: (category,) title, year and tags; the text; the photos
+   that link to the note, laid out like a photo's detail at every width. */
 .note .meta { margin-top: 36px; }   /* notes have no photo: space under the top bar */
 .note-refs { grid-area: info; justify-self: end; width: min(100%, 260px); }
 /* The photos that link to the note, as thumbnails (their titles as alt text). */
@@ -635,10 +641,6 @@ p > .md-figure:only-child { margin: 0; }   /* an image on its own line: the para
 .tag-notes a:hover { color: var(--hover); }
 .tag-note-title { font-size: 1rem; }
 .tag-note-category { font-size: 0.8rem; color: var(--dim); }
-@media (max-width: 600px) {
-  .note-refs { justify-self: stretch; width: auto; margin-top: 16px; padding-top: 16px; border-top: 1px solid var(--line); }
-  .note-refs ul { justify-content: flex-start; }
-}
 
 /* ---------- Motion ----------
    - Photos fade in from their tint as they load (main.js marks the ones still
