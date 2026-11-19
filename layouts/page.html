@@ -58,7 +58,12 @@ detail view (prev/next, counter, caption). Anything else renders as plain text.
       {{- $urls := slice }}{{ range where .Pages "Layout" "ne" "note" }}{{ $urls = $urls | append .RelPermalink }}{{ end }}{{/* photos only, no notes */}}
       {{- $tags = merge $tags (dict (path.Base .Path) (dict "u" .RelPermalink "n" .LinkTitle "p" $urls)) }}
     {{- end }}
-    <main class="viewer" data-viewer data-section="{{ $s.RelPermalink }}">
+    {{- /* The photo's shape and natural width, so CSS can size the photo before
+           it has loaded (the gallery-to-photo morph measures it on the
+           first frame). */}}
+    {{- $photo := partial "photo-resource.html" . }}
+    {{- $big := partial "img-variant.html" (dict "img" $photo "width" 3000) }}
+    <main class="viewer" data-viewer data-section="{{ $s.RelPermalink }}"{{ if and $big.Width $big.Height }} style="--r: {{ printf "%.4f" (div (float $big.Width) $big.Height) }}; --w: {{ $big.Width }}px"{{ end }}>
       <script type="application/json" data-sequence>{{ dict "seq" $seq "subs" $subs "tags" $tags | jsonify | safeJS }}</script>
       <div class="stage">
         {{- if gt $n 1 }}
@@ -66,11 +71,7 @@ detail view (prev/next, counter, caption). Anything else renders as plain text.
           <svg aria-hidden="true" width="24" height="24" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 9H3M8 4 3 9l5 5"/></svg>
         </a>
         {{- end }}
-        {{- /* The photo's shape and natural width, so CSS can size it before it has
-               loaded (the gallery-to-photo morph measures it on the first frame). */}}
-        {{- $photo := partial "photo-resource.html" . }}
-        {{- $big := partial "img-variant.html" (dict "img" $photo "width" 3000) }}
-        <div class="shot"{{ if and $big.Width $big.Height }} style="--r: {{ printf "%.4f" (div (float $big.Width) $big.Height) }}; --w: {{ $big.Width }}px"{{ end }}>
+        <div class="shot">
           {{- partial "img.html" (dict
             "img" $photo
             "widths" (slice 800 1200 1800 2400 3000)
@@ -97,8 +98,14 @@ detail view (prev/next, counter, caption). Anything else renders as plain text.
         </a>
         {{- end }}
       </div>
+      {{- /* Above phone width the photo fills the first screen and the caption waits
+             below it; this cue at the bottom of the screen leads there. */}}
+      <a class="details-cue" href="#details" data-details>
+        <span>{{ T "details" }}</span>
+        <svg aria-hidden="true" width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6l5 5 5-5"/></svg>
+      </a>
       {{- $hasDesc := ne (.Content | strings.TrimSpace) "" }}{{/* text and/or images */}}
-      <div class="meta">
+      <div class="meta" id="details">
         <div class="meta-title">
           <div class="meta-path">
             <a href="{{ $s.RelPermalink }}">{{ $s.LinkTitle }}</a>
@@ -122,6 +129,29 @@ detail view (prev/next, counter, caption). Anything else renders as plain text.
         <div class="meta-detail">{{ . }}</div>
         {{- end }}
       </div>
+      {{- /* When the photo doesn't need the whole screen (its shape leaves room below it,
+             e.g. a landscape photo on a portrait tablet) and the whole caption fits in
+             that room, show the caption right under the photo instead of the "Details"
+             cue (.is-roomy, with the photo's height as --fit). Not on phones, where the
+             caption always follows the photo. Runs before the first paint, so the
+             gallery-to-photo morph aims at the final box, and again on resize. */}}
+      <script>
+      (function (viewer) {
+        var shot = viewer.querySelector('.shot'), meta = viewer.querySelector('.meta');
+        var header = document.querySelector('.photo-header'), wrap = viewer.parentNode;
+        var r = parseFloat(viewer.style.getPropertyValue('--r')), w = parseFloat(viewer.style.getPropertyValue('--w'));
+        var phone = window.matchMedia('(max-width: 600px)');
+        function fit() {
+          var h = Math.min(shot.clientWidth, w) / r;
+          var need = header.offsetHeight + h + parseFloat(getComputedStyle(meta).marginTop) + meta.offsetHeight
+            + parseFloat(getComputedStyle(wrap).paddingBottom);
+          var roomy = !phone.matches && h >= 240 && need <= window.innerHeight;
+          viewer.classList.toggle('is-roomy', roomy);
+          viewer.style.setProperty('--fit', h + 'px');
+        }
+        if (r && w) { fit(); window.addEventListener('resize', fit); }
+      })(document.currentScript.parentNode);
+      </script>
     </main>
   {{- else }}
     <main class="article">

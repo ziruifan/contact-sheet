@@ -254,6 +254,18 @@ if (gallery) {
 // ---------------------------------------------------------------- photo viewer
 const viewer = document.querySelector('[data-viewer]');
 if (viewer) {
+  // The "Details" cue scrolls down to the caption, without adding #details to the
+  // address (which would make Back scroll up instead of leaving the photo).
+  document.querySelector('[data-details]')?.addEventListener('click', (e) => {
+    if (!plainClick(e)) return;
+    e.preventDefault();
+    document.getElementById('details')?.scrollIntoView({ behavior: reducedMotion() ? 'auto' : 'smooth' });
+  });
+  // Once the page is scrolled, the cue has done its job: it fades out.
+  const onScroll = () => viewer.classList.toggle('is-scrolled', window.scrollY > 40);
+  window.addEventListener('scroll', onScroll, { passive: true });
+  onScroll();
+
   const section = normPath(viewer.dataset.section || '');
   const here = normPath(location.pathname);
   const prev = document.querySelector('[data-prev]');

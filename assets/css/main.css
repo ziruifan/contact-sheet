@@ -20,6 +20,7 @@
   --on-image: #f2f2f2;
   --on-image-2: #d0d0d0;
 
+  --header: 76px;          /* height of the top bar */
   --gutter: clamp(24px, 1.5vw, 56px);
   --gap: 12px;
   --row: max(280px, 15vw);  /* target row height of the justified gallery; grows on big screens */
@@ -102,7 +103,7 @@ img { display: block; max-width: 100%; }
   justify-content: space-between;
   align-items: center;
   gap: 4px 24px;
-  min-height: 76px;
+  min-height: var(--header);
 }
 
 .brand {
@@ -444,22 +445,49 @@ p > .md-figure:only-child { margin: 0; }   /* an image on its own line: the para
 .counter { color: var(--dim); font-variant-numeric: tabular-nums; }
 .photo-controls { display: flex; align-items: center; justify-self: end; }
 
-/* The stage (arrows + image) takes the height left after the header and the
-   caption; the image is fitted inside it. */
-.viewer { display: flex; flex-direction: column; }
-/* Never much shorter than a screen minus a caption, so a long description makes the
-   page scroll instead of shrinking the photo. With images in the description, the
-   photo keeps exactly the size it has on a page with a one-row caption (header and
-   caption take 258px there). */
-.stage { flex: 1 1 0; min-height: max(240px, min(58vw, calc(100svh - 320px))); display: flex; align-items: center; gap: 16px; }
-.viewer:has(.meta-desc .md-figure) .stage { min-height: max(240px, min(58vw, calc(100svh - 258px))); }
+/* The first screen is the photo alone: the stage (arrows + photo) fills the screen
+   under the top bar, down to a "Details ⌄" cue at the bottom; the caption waits
+   below. The cue fades out as the page scrolls. Phones: see below. */
+/* The cue's row is as tall as the top bar, so the photo sits between the counter and
+   the cue with equal gaps above and below. */
+.viewer { display: flex; flex-direction: column; --cue: var(--header); }
+.stage {
+  flex: none;
+  height: max(240px, calc(100svh - var(--header) - var(--cue)));
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  container-type: size;   /* lets the arrows match the photo's height (cqw/cqh) */
+}
+.details-cue {
+  align-self: center;
+  display: flex;
+  align-items: center;
+  gap: 8px;   /* text and chevron like the back link's */
+  height: var(--cue);
+  padding: 0 16px;
+  font-size: 0.8rem;
+  color: var(--dim);
+}
+.details-cue:hover { color: var(--hover); }
+.details-cue { transition: opacity 0.2s ease, visibility 0.2s; }
+.viewer.is-scrolled .details-cue { opacity: 0; visibility: hidden; }   /* set by main.js */
+.meta { scroll-margin-top: 24px; }   /* the cue scrolls the caption to the top, with room */
+/* A photo that leaves room for the whole caption below it (layouts/page.html decides):
+   the stage takes just the photo's height, the caption follows, no cue. */
+.viewer.is-roomy .stage { height: var(--fit); }
+.viewer.is-roomy .details-cue { display: none; }
+/* Prev/next: clickable over the photo's whole height (the photo's height worked out
+   like .shot img's below: the stage minus the arrows and gaps, 128px, in the photo's
+   shape); the hover background fills that whole strip. */
 .step {
   flex: none;
   display: flex;
   align-items: center;
   justify-content: center;
   width: 48px;
-  height: 48px;
+  height: min(100cqh, calc((100cqw - 128px) / var(--r, 1.5)), calc(var(--w, 100000px) / var(--r, 1.5)));
+  min-height: 48px;
   color: var(--fg);
 }
 .step[hidden] { display: none; }
@@ -542,7 +570,9 @@ p > .md-figure:only-child { margin: 0; }   /* an image on its own line: the para
 }
 @media (max-width: 600px) {
   /* Photo first, then a row with the arrows under it (prev left, next right). */
-  .stage { flex: none; flex-wrap: wrap; justify-content: space-between; gap: 4px 0; min-height: 0; }
+  .stage { flex-wrap: wrap; justify-content: space-between; gap: 4px 0; height: auto; container-type: normal; }
+  .step { height: 48px; }
+  .details-cue { display: none; }   /* the caption follows the photo straight away */
   .shot { order: -1; flex: 1 1 100%; position: static; container-type: normal; }
   .shot img { position: static; margin: 0 auto; width: min(100%, calc(75svh * var(--r, 1.5)), var(--w, 100000px)); max-height: 75svh; }
   .step[rel="prev"] { margin-left: -12px; }   /* line the arrow icons up with the photo's edges */
