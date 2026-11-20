@@ -474,7 +474,8 @@ p > .md-figure:only-child { margin: 0; }   /* an image on its own line: the para
 .viewer.is-scrolled .details-cue { opacity: 0; visibility: hidden; }   /* set by main.js */
 .meta { scroll-margin-top: 24px; }   /* the cue scrolls the caption to the top, with room */
 /* A photo that leaves room for the whole caption below it (layouts/page.html decides):
-   the stage takes just the photo's height, the caption follows, no cue. */
+   the stage takes the screen's height minus the caption's, so the caption sits at
+   the bottom of the screen; no cue. */
 .viewer.is-roomy .stage { height: var(--fit); }
 .viewer.is-roomy .details-cue { display: none; }
 /* Prev/next: clickable over the photo's whole height (the photo's height worked out
@@ -567,6 +568,13 @@ p > .md-figure:only-child { margin: 0; }   /* an image on its own line: the para
   }
   .meta-detail, .meta .note-refs { justify-self: start; text-align: left; }
   .meta .note-refs ul { justify-content: flex-start; }
+}
+/* Medium screens without a description: the detail takes its place on the right,
+   aligned right as on wide screens. */
+@media (min-width: 601px) and (max-width: 1200px) {
+  .meta:not(:has(.meta-desc)) { grid-template-rows: auto; grid-template-areas: "title info"; }
+  .meta:not(:has(.meta-desc)) :is(.meta-detail, .note-refs) { justify-self: end; text-align: right; }
+  .meta:not(:has(.meta-desc)) .note-refs ul { justify-content: flex-end; }
 }
 @media (max-width: 600px) {
   /* Photo first, then a row with the arrows under it (prev left, next right). */

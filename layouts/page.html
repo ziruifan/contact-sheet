@@ -131,9 +131,10 @@ detail view (prev/next, counter, caption). Anything else renders as plain text.
       </div>
       {{- /* When the photo doesn't need the whole screen (its shape leaves room below it,
              e.g. a landscape photo on a portrait tablet) and the whole caption fits in
-             that room, show the caption right under the photo instead of the "Details"
-             cue (.is-roomy, with the photo's height as --fit). Not on phones, where the
-             caption always follows the photo. Runs before the first paint, so the
+             that room, the page is exactly one screen: the caption sits at the bottom
+             instead of the "Details" cue, and the photo's area fills the height above
+             it (.is-roomy, with that height as --fit). Not on phones, where the caption
+             always follows the photo. Runs before the first paint, so the
              gallery-to-photo morph aims at the final box, and again on resize. */}}
       <script>
       (function (viewer) {
@@ -143,11 +144,11 @@ detail view (prev/next, counter, caption). Anything else renders as plain text.
         var phone = window.matchMedia('(max-width: 600px)');
         function fit() {
           var h = Math.min(shot.clientWidth, w) / r;
-          var need = header.offsetHeight + h + parseFloat(getComputedStyle(meta).marginTop) + meta.offsetHeight
-            + parseFloat(getComputedStyle(wrap).paddingBottom);
-          var roomy = !phone.matches && h >= 240 && need <= window.innerHeight;
+          var room = Math.floor(window.innerHeight - header.offsetHeight - parseFloat(getComputedStyle(meta).marginTop)
+            - meta.offsetHeight - parseFloat(getComputedStyle(wrap).paddingBottom));
+          var roomy = !phone.matches && h >= 240 && h <= room;
           viewer.classList.toggle('is-roomy', roomy);
-          viewer.style.setProperty('--fit', h + 'px');
+          viewer.style.setProperty('--fit', room + 'px');
         }
         if (r && w) { fit(); window.addEventListener('resize', fit); }
       })(document.currentScript.parentNode);
