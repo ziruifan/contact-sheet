@@ -4,6 +4,8 @@ About page. Set `layout: about` in front matter.
   photos: [lake.jpg, hills.jpg]   # optional; images in this folder, in this order.
                                   # Without it, every image in the folder, by file name
                                   # (except images used in the bio text).
+  focus:                          # optional focal points for the cropped photo grid
+    hills.jpg: 50% 30%            # (several photos), as for photos (see focus.html)
   links:                          # the first link is highlighted
     - name: me@example.com
       url: mailto:me@example.com
@@ -39,11 +41,13 @@ The page body is the bio. Text and links on the left, the photos on the right
          (_partials/tile-rows.html), cropped to fill equal-height rows. */}}
   {{- $grid := partial "tile-rows.html" (len .) }}
   {{- $multi := gt (len .) 1 }}
+  {{- $focusMap := partial "param-any-lang.html" (dict "page" $ "key" "focus") }}{{/* per file name, any translation */}}
   <div class="about-photos{{ if $multi }} is-grid{{ end }}" style="--rows: {{ $grid.rows }}">
     {{- range $i, $img := . }}
     {{- $k := index $grid.k $i }}
+    {{- $focus := "" }}{{ with $focusMap }}{{ with index . $img.Name }}{{ $focus = partial "focus-css.html" . }}{{ end }}{{ end }}
     <figure class="about-photo" style="--k: {{ $k }}">
-      {{- partial "img.html" (dict "img" $img "widths" (slice 800 1200 1600 2400) "sizes" (printf "(max-width: 860px) 100vw, %dvw" (div 70 $k)) "alt" (cond (eq $i 0) $.Title "") "eager" (lt $i 2)) }}
+      {{- partial "img.html" (dict "img" $img "widths" (slice 800 1200 1600 2400) "sizes" (printf "(max-width: 860px) 100vw, %dvw" (div 70 $k)) "alt" (cond (eq $i 0) $.Title "") "eager" (lt $i 2) "focus" $focus) }}
     </figure>
     {{- end }}
   </div>

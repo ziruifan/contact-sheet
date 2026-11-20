@@ -73,7 +73,7 @@ title, where a photo shows its category, and `tags` below the year, as on photo 
         <li>
           <a href="{{ .RelPermalink }}" title="{{ .LinkTitle }}">
             {{- with partial "photo-resource.html" . }}
-              {{- partial "img.html" (dict "img" . "widths" (slice 240 480) "sizes" "96px" "alt" $p.LinkTitle "class" "note-ref-img") }}
+              {{- partial "img.html" (dict "img" . "widths" (slice 240 480) "sizes" "96px" "alt" $p.LinkTitle "class" "note-ref-img" "focus" (partial "focus.html" $p)) }}
             {{- else }}
               <span class="note-ref-text">{{ .LinkTitle }}</span>
             {{- end }}

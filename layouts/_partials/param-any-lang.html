@@ -1,0 +1,15 @@
+{{- /*
+Returns a front matter value from the page, else from the first of its
+translations that sets it, else "". For values that belong to the files rather
+than the text (focal points).
+
+@context {page}   page
+@context {string} key
+*/ -}}
+{{- $v := index .page.Params .key }}
+{{- if not $v }}
+  {{- range .page.AllTranslations }}
+    {{- if not $v }}{{ $v = index .Params $.key }}{{ end }}
+  {{- end }}
+{{- end }}
+{{- return (or $v "") }}

@@ -1,0 +1,26 @@
+{{- /*
+Returns the focal point of a page's main image, for crops (object-position), or "".
+Front matter `focus` holds it as a CSS position: "30% 60%" (from the left, from the
+top), "50% 20%", "top", "left bottom"... It belongs to the image, so one
+translation is enough (index.md or index.zh.md). A category without its own
+`focus` uses the one of the photo its tile shows (when it has no cover.* image;
+see photo-resource.html).
+
+@context {page} .
+*/ -}}
+{{- $raw := partial "param-any-lang.html" (dict "page" . "key" "focus") }}
+{{- $f := "" }}
+{{- if $raw }}
+  {{- $f = partial "focus-css.html" $raw }}
+{{- else if and .IsSection (not (.Resources.GetMatch "cover.*")) }}
+  {{- $pages := .RegularPagesRecursive }}
+  {{- with where $pages "Params.featured" true }}{{ $pages = . }}{{ end }}
+  {{- $done := false }}
+  {{- range $pages }}
+    {{- if and (not $done) (partial "photo-resource.html" .) }}
+      {{- $done = true }}
+      {{- $f = partial "focus.html" . }}
+    {{- end }}
+  {{- end }}
+{{- end }}
+{{- return $f }}

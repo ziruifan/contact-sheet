@@ -147,6 +147,7 @@ Then drop the image into the new folder and set `draft: false`.
 | `featured` | Optional. Use this photo as the category's homepage tile (if no `cover.*`)|
 | `image`    | Optional. Which image is the photo, if the folder holds several (images used in the description never are) |
 | `detail`   | Optional. Plain text on the right of the caption, line breaks kept (see "Detail") |
+| `focus`    | Optional. The point to keep in view where the photo is cropped (see "Focal point") |
 
 The page body is the description. Leave it empty and the description block is left out.
 
@@ -266,6 +267,27 @@ tags: [Consectetur, Magna]
 ### Homepage tile image
 
 The theme picks the first of these that exists: `cover.*` in the category folder, then a photo marked `featured: true`, then the first photo.
+
+### Focal point
+
+The homepage tiles, the About photo grid and the photo thumbnails on notes crop
+photos to fill their box, and the box's shape follows the screen. By default the
+crop keeps the middle. `focus` names the point to keep in view instead, as a CSS
+position: `"30% 60%"` (30% from the left, 60% from the top), `"50% 20%"`, `"top"`,
+`"left bottom"`. It belongs to the image, so setting it in one language's file is
+enough. Galleries and photo pages always show the whole photo.
+
+```yaml
+# a photo's index.md: used on its homepage tile and on notes
+focus: "50% 70%"
+
+# a category's _index.md: for its cover.* image (overrides the photo's focus)
+focus: "top"
+
+# the About page: per photo in the folder
+focus:
+  sea-mist.jpg: "50% 80%"
+```
 
 ## Site params
 

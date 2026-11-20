@@ -1,0 +1,13 @@
+{{- /*
+Checks a `focus` value and returns it as a CSS position, or "" (with a warning)
+when it isn't one: only numbers, %, px and the position keywords are allowed.
+
+@context {string} .
+*/ -}}
+{{- $v := . | string | strings.TrimSpace | lower }}
+{{- $ok := findRE `^(-?[0-9.]+(%|px)?|left|right|top|bottom|center)( (-?[0-9.]+(%|px)?|left|right|top|bottom|center)){0,3}$` $v }}
+{{- if not $ok }}
+  {{- warnf "contact-sheet: focus %q is not a position like \"30%% 60%%\" or \"top\"; ignored" $v }}
+  {{- $v = "" }}
+{{- end }}
+{{- return $v }}

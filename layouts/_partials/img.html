@@ -7,6 +7,7 @@ Renders a responsive <img> for an image resource.
 @context {string}   alt      Alt text.
 @context {string}   class    Optional class.
 @context {bool}     eager    Load eagerly with high priority (above-the-fold images).
+@context {string}   focus    Optional focal point for crops (a checked CSS position, see focus.html).
 */ -}}
 {{- $img := .img }}
 {{- $processable := in (slice "jpeg" "png" "webp" "tiff" "bmp") $img.MediaType.SubType }}
@@ -28,4 +29,5 @@ Renders a responsive <img> for an image resource.
   {{- with $src.Width }} width="{{ . }}" height="{{ $src.Height }}"{{ end }}
   alt="{{ .alt }}"
   {{- with .class }} class="{{ . }}"{{ end }}
+  {{- with .focus }} style="object-position: {{ . | safeCSS }}"{{ end }}
   {{- if .eager }} fetchpriority="high"{{ else }} loading="lazy"{{ end }} decoding="async">
