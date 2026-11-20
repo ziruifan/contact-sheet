@@ -58,9 +58,8 @@ detail view (prev/next, counter, caption). Anything else renders as plain text.
       {{- $urls := slice }}{{ range where .Pages "Layout" "ne" "note" }}{{ $urls = $urls | append .RelPermalink }}{{ end }}{{/* photos only, no notes */}}
       {{- $tags = merge $tags (dict (path.Base .Path) (dict "u" .RelPermalink "n" .LinkTitle "p" $urls)) }}
     {{- end }}
-    {{- /* The photo's shape and natural width, so CSS can size the photo before
-           it has loaded (the gallery-to-photo morph measures it on the
-           first frame). */}}
+    {{- /* The photo's shape and natural width, so CSS can size the photo before it
+           has loaded (the gallery-to-photo morph measures it on the first frame). */}}
     {{- $photo := partial "photo-resource.html" . }}
     {{- $big := partial "img-variant.html" (dict "img" $photo "width" 3000) }}
     <main class="viewer" data-viewer data-section="{{ $s.RelPermalink }}"{{ if and $big.Width $big.Height }} style="--r: {{ printf "%.4f" (div (float $big.Width) $big.Height) }}; --w: {{ $big.Width }}px"{{ end }}>
@@ -130,23 +129,28 @@ detail view (prev/next, counter, caption). Anything else renders as plain text.
         {{- end }}
       </div>
       {{- /* When the photo doesn't need the whole screen (its shape leaves room below it,
-             e.g. a landscape photo on a portrait tablet) and the whole caption fits in
-             that room, the page is exactly one screen: the caption sits at the bottom
-             instead of the "Details" cue, and the photo's area fills the height above
-             it (.is-roomy, with that height as --fit). Not on phones, where the caption
-             always follows the photo. Runs before the first paint, so the
+             e.g. a landscape photo on a portrait tablet or phone) and the whole caption
+             fits in that room, the page is exactly one screen: the caption sits at the
+             bottom instead of the "Details" cue, and the photo's area fills the height
+             above it (.is-roomy, with that height as --fit). On phones that area holds
+             the photo and the arrow row under it. Runs before the first paint, so the
              gallery-to-photo morph aims at the final box, and again on resize. */}}
       <script>
       (function (viewer) {
-        var shot = viewer.querySelector('.shot'), meta = viewer.querySelector('.meta');
+        var stage = viewer.querySelector('.stage'), shot = viewer.querySelector('.shot'), meta = viewer.querySelector('.meta');
         var header = document.querySelector('.photo-header'), wrap = viewer.parentNode;
         var r = parseFloat(viewer.style.getPropertyValue('--r')), w = parseFloat(viewer.style.getPropertyValue('--w'));
         var phone = window.matchMedia('(max-width: 600px)');
         function fit() {
-          var h = Math.min(shot.clientWidth, w) / r;
-          var room = Math.floor(window.innerHeight - header.offsetHeight - parseFloat(getComputedStyle(meta).marginTop)
+          var vh = window.innerHeight, h = Math.min(shot.clientWidth, w) / r, need = h;
+          if (phone.matches) {
+            h = Math.min(h, vh * 0.75);   /* the photo's height cap on phones (main.css) */
+            var step = viewer.querySelector('.step');
+            need = h + (step ? step.offsetHeight + parseFloat(getComputedStyle(stage).rowGap) : 0);   /* plus the arrow row */
+          }
+          var room = Math.floor(vh - header.offsetHeight - parseFloat(getComputedStyle(meta).marginTop)
             - meta.offsetHeight - parseFloat(getComputedStyle(wrap).paddingBottom));
-          var roomy = !phone.matches && h >= 240 && h <= room;
+          var roomy = (phone.matches || h >= 240) && need <= room;   /* 240px: the stage's minimum (main.css) */
           viewer.classList.toggle('is-roomy', roomy);
           viewer.style.setProperty('--fit', room + 'px');
         }
