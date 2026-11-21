@@ -1,0 +1,26 @@
+{{- /*
+Returns the colour shown behind a page's photo while it loads, or "".
+
+  Photo page: front matter `tint` (in any translation), else the photo's dominant
+              colour (image-color.html).
+  Category:   the colour of the image its homepage tile shows (cover.*, or that
+              photo's, as above).
+
+Empty (SVG, GIF, no image): the box keeps the theme's neutral grey (--tint in main.css).
+
+@context {page} .
+*/ -}}
+{{- $c := "" }}
+{{- if .IsSection }}
+  {{- with partial "cover-page.html" . }}
+    {{- $c = partial "tint.html" . }}
+  {{- else }}
+    {{- with partial "photo-resource.html" $ }}{{ $c = partial "image-color.html" . }}{{ end }}
+  {{- end }}
+{{- else }}
+  {{- $c = partial "param-any-lang.html" (dict "page" . "key" "tint") }}
+  {{- if not $c }}
+    {{- with partial "photo-resource.html" . }}{{ $c = partial "image-color.html" . }}{{ end }}
+  {{- end }}
+{{- end }}
+{{- return $c }}

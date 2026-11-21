@@ -12,15 +12,7 @@ see photo-resource.html).
 {{- $f := "" }}
 {{- if $raw }}
   {{- $f = partial "focus-css.html" $raw }}
-{{- else if and .IsSection (not (.Resources.GetMatch "cover.*")) }}
-  {{- $pages := .RegularPagesRecursive }}
-  {{- with where $pages "Params.featured" true }}{{ $pages = . }}{{ end }}
-  {{- $done := false }}
-  {{- range $pages }}
-    {{- if and (not $done) (partial "photo-resource.html" .) }}
-      {{- $done = true }}
-      {{- $f = partial "focus.html" . }}
-    {{- end }}
-  {{- end }}
+{{- else if .IsSection }}
+  {{- with partial "cover-page.html" . }}{{ $f = partial "focus.html" . }}{{ end }}
 {{- end }}
 {{- return $f }}

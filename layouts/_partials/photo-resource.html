@@ -16,13 +16,7 @@ Returns the main image resource for a page, or nothing.
   {{- with .Resources.GetMatch "cover.*" }}
     {{- $img = . }}
   {{- else }}
-    {{- $pages := .RegularPagesRecursive }}
-    {{- with where $pages "Params.featured" true }}{{ $pages = . }}{{ end }}
-    {{- range $pages }}
-      {{- if not $img }}
-        {{- with partial "photo-resource.html" . }}{{ $img = . }}{{ end }}
-      {{- end }}
-    {{- end }}
+    {{- with partial "cover-page.html" . }}{{ $img = partial "photo-resource.html" . }}{{ end }}
   {{- end }}
 {{- else if .IsPage }}
   {{- with .Params.image }}

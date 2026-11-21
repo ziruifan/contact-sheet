@@ -1,6 +1,5 @@
 ---
 title: 宇宙
-tint: '#332f35'
 cascade:
   params:
     detail: |

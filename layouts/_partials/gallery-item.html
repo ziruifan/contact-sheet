@@ -16,7 +16,7 @@ One photo in a justified gallery (category, subcategory and tag pages).
   {{- if and $v.Width $v.Height }}{{ $ratio = div (float $v.Width) $v.Height }}{{ end }}
 {{- end }}
 <figure class="item" style="--r: {{ printf "%.4f" $ratio }}"{{ with .sub }} data-sub="{{ . }}"{{ end }}{{ if .hidden }} hidden{{ end }}>
-  <a class="frame" href="{{ $p.RelPermalink }}{{ .query }}"{{ with $p.Params.tint | default $p.FirstSection.Params.tint }} style="--tint: {{ . | safeCSS }}"{{ end }}>
+  <a class="frame" href="{{ $p.RelPermalink }}{{ .query }}"{{ with partial "tint.html" $p }} style="--tint: {{ . | safeCSS }}"{{ end }}>
     {{- with $img }}
       {{- partial "img.html" (dict
         "img" .

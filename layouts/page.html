@@ -62,7 +62,12 @@ detail view (prev/next, counter, caption). Anything else renders as plain text.
            has loaded (the gallery-to-photo morph measures it on the first frame). */}}
     {{- $photo := partial "photo-resource.html" . }}
     {{- $big := partial "img-variant.html" (dict "img" $photo "width" 3000) }}
-    <main class="viewer" data-viewer data-section="{{ $s.RelPermalink }}"{{ if and $big.Width $big.Height }} style="--r: {{ printf "%.4f" (div (float $big.Width) $big.Height) }}; --w: {{ $big.Width }}px"{{ end }}>
+    {{- $style := slice }}
+    {{- if and $big.Width $big.Height }}
+      {{- $style = $style | append (printf "--r: %.4f" (div (float $big.Width) $big.Height)) (printf "--w: %dpx" $big.Width) }}
+    {{- end }}
+    {{- with partial "tint.html" . }}{{ $style = $style | append (printf "--tint: %s" .) }}{{ end }}
+    <main class="viewer" data-viewer data-section="{{ $s.RelPermalink }}"{{ with $style }} style="{{ delimit . "; " | safeCSS }}"{{ end }}>
       <script type="application/json" data-sequence>{{ dict "seq" $seq "subs" $subs "tags" $tags | jsonify | safeJS }}</script>
       <div class="stage">
         {{- if gt $n 1 }}

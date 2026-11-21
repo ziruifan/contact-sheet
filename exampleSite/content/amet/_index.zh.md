@@ -1,6 +1,5 @@
 ---
 title: 辰宿
-tint: '#1c2235'
 cascade:
   params:
     detail: |

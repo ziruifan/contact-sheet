@@ -1,0 +1,12 @@
+{{- /*
+Returns an image's dominant colour as "#rrggbb", shown behind it while it loads,
+or "" for formats Hugo can't read (SVG, GIF). Worked out on a small copy, so it is
+cheap and cached with the other processed images.
+
+@context {resource} .
+*/ -}}
+{{- $c := "" }}
+{{- if in (slice "jpeg" "png" "webp" "tiff" "bmp") .MediaType.SubType }}
+  {{- with (.Resize "64x").Colors }}{{ $c = (index . 0).ColorHex }}{{ end }}
+{{- end }}
+{{- return $c }}

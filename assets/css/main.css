@@ -14,8 +14,8 @@
   --outline: #6b6b6b;
   --hover: #ffffff;         /* strongest text, used on hover */
   --hover-bg: rgba(255, 255, 255, 0.06);
-  --portrait: #2a2f2c;      /* placeholder behind the About photos */
-  --tint: #1d2a35;          /* placeholder colour behind images while they load */
+  --tint: #333333;          /* behind images while they load: each photo sets its own colour
+                               (tint.html); this neutral grey is for those that can't (SVG, GIF) */
   /* Text drawn on top of photos stays light in both palettes. */
   --on-image: #f2f2f2;
   --on-image-2: #d0d0d0;
@@ -43,7 +43,7 @@
     --outline: #9a9a9a;
     --hover: #000000;
     --hover-bg: rgba(0, 0, 0, 0.05);
-    --portrait: #d9dcd9;
+    --tint: #8a8a8a;
     color-scheme: light;
   }
 }
@@ -635,7 +635,7 @@ p > .md-figure:only-child { margin: 0; }   /* an image on its own line: the para
   min-width: 0;
 }
 .about-photos { display: flex; flex-wrap: wrap; gap: var(--gap); min-width: 0; }
-.about-photo { flex: 1 1 100%; min-width: 0; margin: 0; background: var(--portrait); }
+.about-photo { flex: 1 1 100%; min-width: 0; margin: 0; background: var(--tint); }
 .about-photo img { width: 100%; height: auto; transition: opacity 0.35s ease; }
 /* Several photos: the home tile grid, its rows sharing the page height. */
 .about-photos.is-grid { align-self: stretch; align-content: stretch; }

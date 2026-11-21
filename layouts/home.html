@@ -10,7 +10,7 @@
   {{- range $i, $s := $cats }}
     {{- $k := index $grid.k $i }}
     {{- $img := partial "photo-resource.html" $s }}
-    <a class="tile" href="{{ $s.RelPermalink }}" style="--k: {{ $k }}{{ with $s.Params.tint }}; --tint: {{ . | safeCSS }}{{ end }}">
+    <a class="tile" href="{{ $s.RelPermalink }}" style="--k: {{ $k }}{{ with partial "tint.html" $s }}; --tint: {{ . | safeCSS }}{{ end }}">
       {{- with $img }}
         {{- partial "img.html" (dict
           "img" .

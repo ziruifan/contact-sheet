@@ -46,7 +46,7 @@ The page body is the bio. Text and links on the left, the photos on the right
     {{- range $i, $img := . }}
     {{- $k := index $grid.k $i }}
     {{- $focus := "" }}{{ with $focusMap }}{{ with index . $img.Name }}{{ $focus = partial "focus-css.html" . }}{{ end }}{{ end }}
-    <figure class="about-photo" style="--k: {{ $k }}">
+    <figure class="about-photo" style="--k: {{ $k }}{{ with partial "image-color.html" $img }}; --tint: {{ . | safeCSS }}{{ end }}">
       {{- partial "img.html" (dict "img" $img "widths" (slice 800 1200 1600 2400) "sizes" (printf "(max-width: 860px) 100vw, %dvw" (div 70 $k)) "alt" (cond (eq $i 0) $.Title "") "eager" (lt $i 2) "focus" $focus) }}
     </figure>
     {{- end }}

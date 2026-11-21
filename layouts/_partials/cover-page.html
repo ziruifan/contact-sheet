@@ -1,0 +1,16 @@
+{{- /*
+For a category without a cover.* image, returns the photo page whose image its
+homepage tile shows: the first photo marked `featured: true`, else the first
+photo; false when it has a cover.* image or no photos.
+
+@context {page} .  (a section)
+*/ -}}
+{{- $p := false }}
+{{- if not (.Resources.GetMatch "cover.*") }}
+  {{- $pages := .RegularPagesRecursive }}
+  {{- with where $pages "Params.featured" true }}{{ $pages = . }}{{ end }}
+  {{- range $pages }}
+    {{- if and (not $p) (partial "photo-resource.html" .) }}{{ $p = . }}{{ end }}
+  {{- end }}
+{{- end }}
+{{- return $p }}

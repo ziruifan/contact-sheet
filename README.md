@@ -68,9 +68,8 @@ Chinese title) and add `<name>` to the list. Without `categories`, every top-lev
 section is shown, ordered by `weight` in its `_index.md`. A section left off the list
 still builds and is reachable by URL. It is just not linked from the homepage or nav.
 
-Category `_index.md` fields: `title`, `weight` (only used without `categories`),
-`tint` (placeholder colour behind images while they load). The body, if any, is shown
-above the gallery.
+Category `_index.md` fields: `title`, `weight` (only used without `categories`). The
+body, if any, is shown above the gallery.
 
 ### Subcategories
 
@@ -115,7 +114,7 @@ content/
         index.md            # title, date, tags; body = the text
         ridges-left.jpg     # images used in the text
   lorem/                    # one folder per category, listed in params.categories
-    _index.md               # title, tint (placeholder colour, optional)
+    _index.md               # title
     _index.zh.md            # Chinese title
     cover.jpg               # optional homepage tile image
     eiusmod/                # optional subcategory
@@ -148,6 +147,7 @@ Then drop the image into the new folder and set `draft: false`.
 | `image`    | Optional. Which image is the photo, if the folder holds several (images used in the description never are) |
 | `detail`   | Optional. Plain text on the right of the caption, line breaks kept (see "Detail") |
 | `focus`    | Optional. The point to keep in view where the photo is cropped (see "Focal point") |
+| `tint`     | Optional. Colour shown while the photo loads, e.g. `'#4d404d'` (see "Placeholder colour") |
 
 The page body is the description. Leave it empty and the description block is left out.
 
@@ -267,6 +267,14 @@ tags: [Consectetur, Magna]
 ### Homepage tile image
 
 The theme picks the first of these that exists: `cover.*` in the category folder, then a photo marked `featured: true`, then the first photo.
+
+### Placeholder colour
+
+While a photo loads, its box shows the photo's own dominant colour, worked out from
+the image at build time, so the gallery, homepage tiles, photo pages, notes, About
+photos and description images fill in with a colour that matches each photo. Set
+`tint` in a photo's front matter to choose the colour yourself (one language's file
+is enough). Images whose colour Hugo can't read (SVG, GIF) show a neutral grey.
 
 ### Focal point
 
