@@ -4,6 +4,9 @@
        stack the tiles in one column). Each tile gets --k, the tiles in its row. */}}
 {{- $grid := partial "tile-rows.html" (len $cats) }}
 <main class="tiles" style="--rows: {{ $grid.rows }}">
+  {{- /* The header shows only the name here, so the page's heading is hidden: for
+         screen readers and search engines. */}}
+  <h1 class="visually-hidden">{{ site.Title }}</h1>
   {{- range $i, $s := $cats }}
     {{- $k := index $grid.k $i }}
     {{- $img := partial "photo-resource.html" $s }}

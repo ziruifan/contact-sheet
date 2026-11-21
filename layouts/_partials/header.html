@@ -9,7 +9,8 @@ and again on resize and once the web fonts have loaded.
   tag            Name · Tags · Consectetur
   tag index      Name · Tags
   other pages    Name · Title
-The trail after the name is the page's <h1>.
+The trail after the name is the page's <h1>. The homepage has no trail; its <h1>
+is in layouts/home.html, visually hidden.
 */ -}}
 {{- $name := site.Params.author | default site.Title }}
 {{- /* A crumb's dot stays with the crumb after it (no-break space), so a wrapped
