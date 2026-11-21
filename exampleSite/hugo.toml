@@ -1,4 +1,4 @@
-# Example site for the contact-sheet theme: Lorem Ipsum text (千字文 on the Chinese
+# Example site for the passe-partout theme: Lorem Ipsum text (千字文 on the Chinese
 # pages) and a set of generated photos.
 # Preview it from the theme folder with:
 #   hugo server --source exampleSite
@@ -6,7 +6,7 @@
 
 baseURL = 'https://example.org/'
 title = 'Lorem Ipsum'
-theme = 'contact-sheet'
+theme = 'passe-partout'
 themesDir = '../..'
 
 defaultContentLanguage = 'en'
@@ -23,7 +23,7 @@ defaultContentLanguageInSubdir = false
   categories = ['lorem', 'ipsum', 'dolor', 'amet']
   # Shown top-left and in the footer. Defaults to `title`.
   author = 'Lorem Ipsum'
-  # Optional footer logo, path in assets/ or static/. Here: the favicon's contact-sheet mark.
+  # Optional footer logo, path in assets/ or static/. Here: the theme's favicon mark.
   logo = 'favicon.svg'
   # Fallback meta description.
   description = 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.'

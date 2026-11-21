@@ -1,6 +1,6 @@
-// contact-sheet: dropdown menus, folded navigation, gallery subcategory switching, photo viewer navigation.
+// passe-partout: dropdown menus, folded navigation, gallery subcategory switching, photo viewer navigation.
 
-const GALLERY_KEY = 'contact-sheet:gallery';
+const GALLERY_KEY = 'passe-partout:gallery';
 
 // Compare paths regardless of percent-encoding and a trailing index.html.
 const normPath = (p) => {
@@ -240,7 +240,7 @@ if (gallery) {
     // it behind the full photo until that arrives (see layouts/page.html).
     const img = frame && frame.querySelector('img');
     if (img && img.currentSrc) {
-      store.set('contact-sheet:thumb', JSON.stringify({ u: normPath(new URL(e.activation.entry.url).pathname), src: img.currentSrc }));
+      store.set('passe-partout:thumb', JSON.stringify({ u: normPath(new URL(e.activation.entry.url).pathname), src: img.currentSrc }));
     }
     if (e.viewTransition) morph(frame, e.viewTransition);
   });

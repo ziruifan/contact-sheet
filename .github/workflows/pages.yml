@@ -1,5 +1,5 @@
 # Builds exampleSite/ and publishes it to GitHub Pages:
-#   https://ziruifan.github.io/contact-sheet/
+#   https://ziruifan.github.io/passe-partout/
 #
 # One-time setup: in the repository, Settings → Pages → Build and deployment →
 # Source: "GitHub Actions".
@@ -55,7 +55,7 @@ jobs:
           key: hugo-resources-${{ hashFiles('exampleSite/content/**', 'exampleSite/assets/**', 'layouts/_partials/img*.html') }}
           restore-keys: hugo-resources-
 
-      # The checkout folder is named after the repository ("contact-sheet"), so
+      # The checkout folder is named after the repository ("passe-partout"), so
       # --themesDir ../.. lets exampleSite find this repository as its theme.
       - name: Build example site
         run: |

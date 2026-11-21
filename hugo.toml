@@ -1,4 +1,4 @@
-# contact-sheet theme defaults. Site config (../../hugo.toml) overrides these.
+# passe-partout theme defaults. Site config (../../hugo.toml) overrides these.
 
 # Tag pages need the tags taxonomy in the site config, which also drops Hugo's
 # unused default `categories` taxonomy:  [taxonomies]  tag = 'tags'

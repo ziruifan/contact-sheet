@@ -1,4 +1,4 @@
-# contact-sheet
+# passe-partout
 
 An image-first Hugo theme for a personal gallery homepage, with light and dark modes
 and English/Chinese out of the box. Requires Hugo ≥ 0.153.
@@ -23,7 +23,7 @@ and English/Chinese out of the box. Requires Hugo ≥ 0.153.
 `exampleSite/` is a complete demo with Lorem Ipsum text (the Chinese pages use the
 千字文, the traditional Chinese filler text). It has 36 generated photos (landscapes, city, water, night) in four
 categories (each split into subcategories), with tags shared across categories, descriptions and an About page, in English and Chinese.
-See it live at **https://ziruifan.github.io/contact-sheet/** (deployed by
+See it live at **https://ziruifan.github.io/passe-partout/** (deployed by
 `.github/workflows/pages.yml` on every push to `main`), or preview it from the theme folder:
 
 ```
@@ -39,7 +39,7 @@ These settings have to be in your site's `hugo.toml`, because a theme's config c
 set them. `exampleSite/hugo.toml` already has them:
 
 ```toml
-theme = 'contact-sheet'
+theme = 'passe-partout'
 
 # Tag pages. This also turns off Hugo's default `categories` taxonomy, which the
 # theme doesn't use (categories are folders, see below).

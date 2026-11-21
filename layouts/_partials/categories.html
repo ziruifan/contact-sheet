@@ -18,7 +18,7 @@ ordered by `weight` in its _index.md.
     {{- with site.GetPage (printf "/%s" $name) }}
       {{- if .IsSection }}{{ $out = $out | append . }}{{ end }}
     {{- else }}
-      {{- warnf "contact-sheet: category %q is listed in params.categories but content/%s/ does not exist" $name $name }}
+      {{- warnf "passe-partout: category %q is listed in params.categories but content/%s/ does not exist" $name $name }}
     {{- end }}
   {{- end }}
 {{- else }}

@@ -17,7 +17,7 @@ The page body is the bio. Text and links on the left, the photos on the right
 {{- $photos := slice }}
 {{- with .Params.photos }}
   {{- range (cond (reflect.IsSlice .) . (slice .)) }}
-    {{- with $.Resources.GetMatch . }}{{ $photos = $photos | append . }}{{ else }}{{ warnf "contact-sheet: about photo %q not found in %s" . $.File.Dir }}{{ end }}
+    {{- with $.Resources.GetMatch . }}{{ $photos = $photos | append . }}{{ else }}{{ warnf "passe-partout: about photo %q not found in %s" . $.File.Dir }}{{ end }}
   {{- end }}
 {{- else }}
   {{- $used := partial "content-images.html" . }}

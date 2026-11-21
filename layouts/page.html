@@ -86,7 +86,7 @@ detail view (prev/next, counter, caption). Anything else renders as plain text.
         <script>
         (function (img) {
           try {
-            var t = JSON.parse(sessionStorage.getItem('contact-sheet:thumb') || 'null');
+            var t = JSON.parse(sessionStorage.getItem('passe-partout:thumb') || 'null');
             if (t && !img.complete && t.u === decodeURI(location.pathname)) img.style.backgroundImage = 'url("' + t.src + '")';
           } catch (e) { /* storage blocked */ }
         })(document.currentScript.previousElementSibling.querySelector('img'));

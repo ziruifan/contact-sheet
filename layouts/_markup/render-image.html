@@ -13,7 +13,7 @@ Spans, not <figure>, because Markdown puts an image inside a paragraph.
   {{- with .PageInner.Resources.Get (strings.TrimPrefix "./" $u.Path) }}{{ $img = . }}
   {{- else }}{{ with resources.Get (strings.TrimPrefix "/" $u.Path) }}{{ $img = . }}{{ end }}
   {{- end }}
-  {{- if not $img }}{{ warnf "contact-sheet: image %q not found for %s" .Destination .PageInner.Path }}{{ end }}
+  {{- if not $img }}{{ warnf "passe-partout: image %q not found for %s" .Destination .PageInner.Path }}{{ end }}
 {{- end -}}
 <span class="md-figure">
   {{- if and $img (eq $img.ResourceType "image") }}
