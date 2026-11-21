@@ -615,15 +615,15 @@ p > .md-figure:only-child { margin: 0; }   /* an image on its own line: the para
 
 /* ---------- About ---------- */
 
-/* Text on the left, lined up with the page edge; photos fill the rest of the
-   width on the right. One photo is shown whole; several use the homepage's tile
-   grid (--k per photo, --rows), cropped to equal-height rows that fit the screen.
-   Narrow screens: text first, then the photos. */
+/* Text on the left, lined up with the page edge; photos in the rest of the width
+   on the right, each whole at its own shape (--r). Several photos are split into
+   rows like the homepage tiles (layouts/about.html); each row fills the column,
+   widths in proportion to the shapes so the heights match (one photo takes the
+   whole width). Narrow screens: text first, then the photos; phones stack them. */
 .about {
   display: grid;
   grid-template-columns: clamp(300px, 28vw, 520px) minmax(0, 1fr);
   align-items: start;
-  align-content: stretch;
   gap: 40px clamp(40px, 4vw, 96px);
 }
 .about-body {
@@ -634,18 +634,10 @@ p > .md-figure:only-child { margin: 0; }   /* an image on its own line: the para
   gap: 24px;
   min-width: 0;
 }
-.about-photos { display: flex; flex-wrap: wrap; gap: var(--gap); min-width: 0; }
-.about-photo { flex: 1 1 100%; min-width: 0; margin: 0; background: var(--tint); }
+.about-photos { display: flex; flex-direction: column; gap: var(--gap); min-width: 0; }
+.about-row { display: flex; gap: var(--gap); }
+.about-photo { flex: var(--r) 1 0; min-width: 0; margin: 0; background: var(--tint); }
 .about-photo img { width: 100%; height: auto; transition: opacity 0.35s ease; }
-/* Several photos: the home tile grid, its rows sharing the page height. */
-.about-photos.is-grid { align-self: stretch; align-content: stretch; }
-.about-photos.is-grid .about-photo {
-  flex-basis: calc((100% - (var(--k, 1) - 1) * var(--gap)) / var(--k, 1) - 1px);
-  min-height: 200px;
-  position: relative;
-  overflow: hidden;
-}
-.about-photos.is-grid .about-photo img { position: absolute; inset: 0; height: 100%; object-fit: cover; }
 
 .bio { font-size: 1.05rem; line-height: 1.65; color: var(--fg-soft); }
 .bio p { margin: 0 0 0.8em; }
@@ -658,13 +650,13 @@ p > .md-figure:only-child { margin: 0; }   /* an image on its own line: the para
 .links a:first-child { color: var(--fg); }
 
 @media (max-width: 860px) {
-  .about { grid-template-columns: minmax(0, 1fr); grid-template-rows: auto 1fr; }
+  .about { grid-template-columns: minmax(0, 1fr); }
   .about-body { position: static; }
 }
 @media (max-width: 600px) {
   .about { padding-top: 24px; }   /* room between the wrapped navigation and the text */
   .bio { font-size: 1rem; }
-  .about-photos.is-grid .about-photo { flex-basis: 100%; min-height: 200px; }   /* stacked, like the home tiles */
+  .about-row { flex-direction: column; }
 }
 
 /* ---------- Plain pages ---------- */

@@ -7,7 +7,7 @@ and English/Chinese out of the box. Requires Hugo ≥ 0.153.
 - **Category**: a justified photo grid. Rows fill the width and every image keeps its own aspect ratio. Hovering a photo zooms it slightly. Optional subcategories are listed in a dropdown under the category's name in the navigation; each has its own page, and switching between them on the category page is instant.
 - **Tags**: every tag has a page with its photos from all categories, and `/tags/` lists them all.
 - **Photo**: one image per page with prev/next (←/→ keys, swipe), a counter, a back link (or Esc), and a caption: category · subcategory, title, year, tags, an optional description, and an optional detail text. Prev/next and the counter follow the gallery the photo was opened from: the category, one subcategory, or a tag page. Going back returns to that gallery at the same scroll position. The neighbouring photos are preloaded, so stepping is instant. Above phone width the first screen is the photo alone, with a small "Details ⌄" cue at the bottom that scrolls down to the caption (and fades as the page scrolls); when the photo's shape leaves room for the whole caption under it (a landscape photo on a portrait tablet or a phone), the caption shows at the bottom of the screen instead, with the photo centred above it. The caption has three columns on wide screens (title block, description, details), two on medium screens (title block with the details under it, beside the description; without a description, the details take its place) and stacks on phones (details under the title, a thin line, then the description).
-- **About**: bio and links on the left, photos filling the right: one photo is shown whole; several use the same tile grid as the homepage.
+- **About**: bio and links on the left, photos on the right, each shown whole at its own shape: one fills the column; several are split into rows like the homepage tiles (3 → 1 + 2, 4 → 2 + 2, 5 → 2 + 3), each row filling the column at one height (stacked on phones).
 - **Notes**: long texts that photo descriptions link to, for explanations too long for a description. They stay out of the navigation, the homepage and the galleries, and list the photos that link to them.
 - **Breadcrumbs**: pages have no big heading; the header shows where you are after the site name instead ("Lorem Ipsum · Lorem · Eiusmod", "Lorem Ipsum · Tags · Consectetur").
 - **Page height**: every page is at least one screen tall, with the footer at the bottom; on photo pages the photo fills the first screen (see Photo).
@@ -278,12 +278,12 @@ is enough). Images whose colour Hugo can't read (SVG, GIF) show a neutral grey.
 
 ### Focal point
 
-The homepage tiles, the About photo grid and the photo thumbnails on notes crop
+The homepage tiles and the photo thumbnails on notes crop
 photos to fill their box, and the box's shape follows the screen. By default the
 crop keeps the middle. `focus` names the point to keep in view instead, as a CSS
 position: `"30% 60%"` (30% from the left, 60% from the top), `"50% 20%"`, `"top"`,
 `"left bottom"`. It belongs to the image, so setting it in one language's file is
-enough. Galleries and photo pages always show the whole photo.
+enough. Galleries, photo pages and the About page always show the whole photo.
 
 ```yaml
 # a photo's index.md: used on its homepage tile and on notes
@@ -291,10 +291,6 @@ focus: "50% 70%"
 
 # a category's _index.md: for its cover.* image (overrides the photo's focus)
 focus: "top"
-
-# the About page: per photo in the folder
-focus:
-  sea-mist.jpg: "50% 80%"
 ```
 
 ## Site params
